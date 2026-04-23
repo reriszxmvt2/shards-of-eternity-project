@@ -5,5 +5,5 @@ import Game from "../shards_of_eternity";
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <Game />
-  </StrictMode>
+  </StrictMode>,
 );
