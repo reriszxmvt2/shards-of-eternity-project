@@ -2,6 +2,7 @@
   <TitleScreen
     v-if="screen === 'title'"
     :colors="COLORS"
+    :visuals="GAME_VISUALS"
     @start="screen = 'scene'"
   />
 
@@ -91,7 +92,7 @@ import {
   gameFlowMethods,
 } from "./composables/useGameFlow";
 import { shopMethods } from "./composables/useShop";
-import { COLORS, SHOP_ITEMS } from "./gameData";
+import { COLORS, GAME_VISUALS, SHOP_ITEMS } from "./gameData";
 
 export default {
   name: "App",
@@ -106,6 +107,7 @@ export default {
   data() {
     return {
       COLORS,
+      GAME_VISUALS,
       SHOP_ITEMS,
       ...createInitialGameState(),
     };

@@ -1,5 +1,13 @@
 <template>
   <div :class="cardClass" :style="cardStyle">
+    <div v-if="hasPortrait" class="soe__battle-member-portrait-frame">
+      <img
+        class="soe__pixel-art soe__battle-member-portrait"
+        :src="member.portrait || member.sprite"
+        alt=""
+        @error="portraitFailed = true"
+      />
+    </div>
     <div class="soe__battle-member-row">
       <span :class="['soe__battle-member-name', isActive && 'soe__battle-member-name--active']">
         {{ member.e }} {{ member.name }}
@@ -44,7 +52,15 @@ export default {
     isActive: { type: Boolean, default: false },
     member: { type: Object, required: true },
   },
+  data() {
+    return {
+      portraitFailed: false,
+    };
+  },
   computed: {
+    hasPortrait() {
+      return Boolean((this.member.portrait || this.member.sprite) && !this.portraitFailed);
+    },
     cardClass() {
       return [
         "soe__battle-member",

@@ -1,3 +1,5 @@
+import { pixelArt } from "./assets/pixelArt";
+
 const COLORS = {
   bg: "#07071a",
   panel: "#0e0e28",
@@ -15,6 +17,8 @@ const COLORS = {
   mp: "#2266ee",
 };
 
+const GAME_VISUALS = pixelArt;
+
 const createDefaultParty = () => [
   {
     id: "phetto",
@@ -23,6 +27,8 @@ const createDefaultParty = () => [
     cls: "WARRIOR",
     color: COLORS.gold,
     e: "[W]",
+    portrait: GAME_VISUALS.portraits.phetto,
+    sprite: GAME_VISUALS.portraits.phetto,
     hp: 120,
     mxHp: 120,
     mp: 40,
@@ -73,6 +79,8 @@ const createDefaultParty = () => [
     cls: "MAGE",
     color: COLORS.purple,
     e: "[M]",
+    portrait: GAME_VISUALS.portraits.lyra,
+    sprite: GAME_VISUALS.portraits.lyra,
     hp: 75,
     mxHp: 75,
     mp: 100,
@@ -121,6 +129,8 @@ const createDefaultParty = () => [
     cls: "ARCHER",
     color: COLORS.green,
     e: "[A]",
+    portrait: GAME_VISUALS.portraits.riven,
+    sprite: GAME_VISUALS.portraits.riven,
     hp: 95,
     mxHp: 95,
     mp: 50,
@@ -169,6 +179,7 @@ const createEnemiesFromKeys = (keys) => {
     goblin: {
       name: "GOBLIN",
       e: "(G)",
+      sprite: GAME_VISUALS.enemies.goblin,
       hp: 45,
       atk: 14,
       def: 5,
@@ -180,6 +191,7 @@ const createEnemiesFromKeys = (keys) => {
     goblin2: {
       name: "GOBLIN",
       e: "(G)",
+      sprite: GAME_VISUALS.enemies.goblin,
       hp: 45,
       atk: 14,
       def: 5,
@@ -191,6 +203,7 @@ const createEnemiesFromKeys = (keys) => {
     goblinChief: {
       name: "GOBLIN CHIEF",
       e: "(G!)",
+      sprite: GAME_VISUALS.enemies.goblinChief,
       hp: 70,
       atk: 20,
       def: 8,
@@ -202,6 +215,7 @@ const createEnemiesFromKeys = (keys) => {
     skeleton: {
       name: "SKELETON KNT",
       e: "(S)",
+      sprite: GAME_VISUALS.enemies.skeletonKnight,
       hp: 95,
       atk: 24,
       def: 14,
@@ -213,6 +227,7 @@ const createEnemiesFromKeys = (keys) => {
     vaelthorn: {
       name: "VAELTHORN",
       e: "(BOSS)",
+      sprite: GAME_VISUALS.enemies.vaelthorn,
       hp: 320,
       atk: 46,
       def: 22,
@@ -307,6 +322,7 @@ const SCENES = {
   s_intro: {
     t: "scene",
     bg: "#180008",
+    illustration: GAME_VISUALS.scenes.aethoriaRuins,
     title: "── บทที่ 1: การล่มสลาย / ACT I: THE FALL ──",
     lines: [
       [null, "AETHORIA ปีที่ 847\n//AETHORIA, YEAR 847", COLORS.gray],
@@ -342,6 +358,7 @@ const SCENES = {
   s_intro2: {
     t: "scene",
     bg: "#1a0800",
+    illustration: GAME_VISUALS.scenes.aethoriaRuins,
     lines: [
       [
         "เพชรโตะ",
@@ -371,6 +388,7 @@ const SCENES = {
   c_after1: {
     t: "scene",
     bg: "#0a1400",
+    illustration: GAME_VISUALS.scenes.aethoriaRuins,
     lines: [
       [
         null,
@@ -394,6 +412,7 @@ const SCENES = {
   ch_merchant: {
     t: "choice",
     bg: "#0a1400",
+    illustration: GAME_VISUALS.scenes.aethoriaRuins,
     text: 'กลางซากถนนที่เต็มไปด้วยเปลวไฟ\nพ่อค้าวัยกลางคนหมอบอยู่มุมตึก\nก็อบลินสองตัวรุมล้อม มีดในมือเขาสั่นรัว\n\nเขาตะโกนขึ้นเมื่อเห็นคุณ\n"ช่วยข้าด้วย!"\n\n// Amid burning ruins, a middle-aged merchant cowers in a corner.\n// Two goblins close in. The knife in his hand trembles.\n// He cries out the moment he sees you:\n// "Please — help me!"',
     choices: [
       {
@@ -418,6 +437,7 @@ const SCENES = {
   c_saved: {
     t: "scene",
     bg: "#0a1400",
+    illustration: GAME_VISUALS.scenes.aethoriaRuins,
     lines: [
       [
         null,
@@ -451,6 +471,7 @@ const SCENES = {
   c_left: {
     t: "scene",
     bg: "#0a0a0a",
+    illustration: GAME_VISUALS.scenes.aethoriaRuins,
     lines: [
       [
         null,
@@ -474,6 +495,7 @@ const SCENES = {
   s_lyra: {
     t: "scene",
     bg: "#0a0a1a",
+    illustration: GAME_VISUALS.scenes.ashwoodForest,
     title: "── ป่าแอชวูด / ASHWOOD FOREST ──",
     lines: [
       [
@@ -513,6 +535,7 @@ const SCENES = {
   s_riven: {
     t: "scene",
     bg: "#0a1a0a",
+    illustration: GAME_VISUALS.scenes.ashwoodForest,
     lines: [
       [
         null,
@@ -552,6 +575,7 @@ const SCENES = {
   s_act2: {
     t: "scene",
     bg: "#1a0a00",
+    illustration: GAME_VISUALS.scenes.mountainPass,
     title: "── บทที่ 2: ช่องเขา / ACT II: THE MOUNTAIN PASS ──",
     lines: [
       [
@@ -579,6 +603,7 @@ const SCENES = {
   s_act3: {
     t: "scene",
     bg: "#1a0000",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
     title: "── บทที่ 3: ถ้ำวาเอลธอร์น / ACT III: VAELTHORN'S LAIR ──",
     lines: [
       [
@@ -621,6 +646,7 @@ const SCENES = {
   c_merchant_twist: {
     t: "scene",
     bg: "#1a0500",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
     lines: [
       [
         null,
@@ -679,6 +705,7 @@ const SCENES = {
   ch_vaelthorn: {
     t: "choice",
     bg: "#1a0000",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
     text: 'Vaelthorn ล้มลง บาดเจ็บสาหัส\nตราสัญลักษณ์รอบคอของมันร้าวแตก\nแสงสีแดงดับวูบ...\n\nแล้วเสียงแผ่วเบาก็แทรกออกมาจากหน้ากากแห่งความเจ็บปวด:\n\n"พ่อมดนั้น... จองจำข้า\nข้าไม่เคยต้องการทำลายอาณาจักรของพวกเจ้า\nข้าแค่... อยากเห็นลูกๆ ข้าอีกครั้ง"\n\n//Vaelthorn collapses, gravely wounded.\n//The Sigil around his neck fractures.\n//The crimson light flickers and dies...\n//Then a faint voice escapes from beneath the mask of pain:\n//"The wizard enslaved me.\n//I never wanted to destroy your kingdom.\n//I only... wanted to see my children again."',
     choices: [
       {
@@ -696,6 +723,7 @@ const SCENES = {
 
   end_peace: {
     t: "ending",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
     titleColor: COLORS.blue,
     title: "ตอนจบ: ผู้ไถ่โทษ / ENDING: THE REDEEMER",
     lines: [
@@ -740,6 +768,7 @@ const SCENES = {
 
   end_war: {
     t: "ending",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
     titleColor: COLORS.red,
     title: "ตอนจบ: นักแก้แค้น / ENDING: THE AVENGER",
     lines: [
@@ -784,4 +813,4 @@ const SCENES = {
   },
 };
 
-export { COLORS, createDefaultParty, createEnemiesFromKeys, BATTLES, SHOP_ITEMS, SCENES };
+export { COLORS, GAME_VISUALS, createDefaultParty, createEnemiesFromKeys, BATTLES, SHOP_ITEMS, SCENES };

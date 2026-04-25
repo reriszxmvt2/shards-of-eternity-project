@@ -2,6 +2,14 @@
   <div class="soe">
     <div class="soe__screen soe__screen--title">
       <div class="soe__title-stars">{{ "* ".repeat(16) }}</div>
+      <div v-if="hasHeroImage" class="soe__title-art">
+        <img
+          class="soe__pixel-art soe__title-image"
+          :src="visuals.title.heroImage"
+          alt=""
+          @error="heroImageFailed = true"
+        />
+      </div>
       <div class="soe__title-kicker">AN 8-BIT LEGEND</div>
       <div class="soe__title-main">SHARDS OF</div>
       <div class="soe__title-sub">ETERNITY</div>
@@ -38,7 +46,18 @@ export default {
   components: { ActionButton },
   props: {
     colors: { type: Object, required: true },
+    visuals: { type: Object, default: () => ({}) },
   },
   emits: ["start"],
+  data() {
+    return {
+      heroImageFailed: false,
+    };
+  },
+  computed: {
+    hasHeroImage() {
+      return Boolean(this.visuals.title?.heroImage && !this.heroImageFailed);
+    },
+  },
 };
 </script>

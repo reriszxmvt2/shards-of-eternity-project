@@ -4,6 +4,15 @@
       <div class="soe__choice-title">
         ── การตัดสินใจของคุณ / YOUR CHOICE ──
       </div>
+      <div v-if="hasChoiceIllustration" class="soe__scene-art">
+        <img
+          :key="scene.illustration"
+          class="soe__pixel-art soe__scene-image"
+          :src="scene.illustration"
+          alt=""
+          @error="failedIllustration = scene.illustration"
+        />
+      </div>
       <div class="soe__panel soe__panel--gold soe__choice-panel">
         <div class="soe__choice-text">{{ choiceText.thai }}</div>
         <div v-if="choiceText.english" class="soe__choice-translation">
@@ -36,5 +45,17 @@ export default {
     scene: { type: Object, required: true },
   },
   emits: ["choose"],
+  data() {
+    return {
+      failedIllustration: "",
+    };
+  },
+  computed: {
+    hasChoiceIllustration() {
+      return Boolean(
+        this.scene.illustration && this.failedIllustration !== this.scene.illustration,
+      );
+    },
+  },
 };
 </script>

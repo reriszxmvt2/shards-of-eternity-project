@@ -4,6 +4,15 @@
       <div v-if="scene.title" class="soe__scene-title">
         {{ scene.title }}
       </div>
+      <div v-if="hasSceneIllustration" class="soe__scene-art">
+        <img
+          :key="scene.illustration"
+          class="soe__pixel-art soe__scene-image"
+          :src="scene.illustration"
+          alt=""
+          @error="failedIllustration = scene.illustration"
+        />
+      </div>
       <div class="soe__panel soe__panel--scene">
         <div v-if="currentLine.speaker" class="soe__scene-speaker">
           [{{ currentLine.speaker }}]
@@ -54,6 +63,18 @@ export default {
     sceneLines: { type: Array, required: true },
   },
   emits: ["advance"],
+  data() {
+    return {
+      failedIllustration: "",
+    };
+  },
+  computed: {
+    hasSceneIllustration() {
+      return Boolean(
+        this.scene.illustration && this.failedIllustration !== this.scene.illustration,
+      );
+    },
+  },
   methods: {
     textColorStyle(color) {
       return { "--soe-text-color": color };

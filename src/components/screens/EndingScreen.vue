@@ -4,6 +4,15 @@
       <div class="soe__ending-title" :style="endingTitleStyle">
         {{ scene.title }}
       </div>
+      <div v-if="hasEndingIllustration" class="soe__scene-art">
+        <img
+          :key="scene.illustration"
+          class="soe__pixel-art soe__scene-image"
+          :src="scene.illustration"
+          alt=""
+          @error="failedIllustration = scene.illustration"
+        />
+      </div>
       <div class="soe__ending-panel" :style="endingPanelStyle">
         <div v-for="(line, index) in scene.lines || []" :key="index" class="soe__ending-line">
           <div class="soe__ending-text" :style="textColorStyle(line[2] || colors.white)">
@@ -40,7 +49,17 @@ export default {
     storyFlags: { type: Object, required: true },
   },
   emits: ["reset"],
+  data() {
+    return {
+      failedIllustration: "",
+    };
+  },
   computed: {
+    hasEndingIllustration() {
+      return Boolean(
+        this.scene.illustration && this.failedIllustration !== this.scene.illustration,
+      );
+    },
     endingTitleStyle() {
       return {
         "--soe-ending-color": this.scene.titleColor,

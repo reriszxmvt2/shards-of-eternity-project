@@ -1,6 +1,13 @@
 <template>
   <div :class="cardClass" :style="cardStyle" @click="$emit('select', index)">
-    <div :class="['soe__enemy-icon', enemy.boss && 'soe__enemy-icon--boss']">
+    <img
+      v-if="hasSprite"
+      :class="['soe__pixel-art', 'soe__enemy-sprite', enemy.boss && 'soe__enemy-sprite--boss']"
+      :src="enemy.sprite"
+      alt=""
+      @error="spriteFailed = true"
+    />
+    <div v-else :class="['soe__enemy-icon', enemy.boss && 'soe__enemy-icon--boss']">
       {{ enemy.e }}
     </div>
     <div :class="['soe__enemy-name', enemy.boss && 'soe__enemy-name--boss']">
@@ -47,7 +54,15 @@ export default {
     isTargetingEnemy: { type: Boolean, default: false },
   },
   emits: ["select"],
+  data() {
+    return {
+      spriteFailed: false,
+    };
+  },
   computed: {
+    hasSprite() {
+      return Boolean(this.enemy.sprite && !this.spriteFailed);
+    },
     cardClass() {
       return [
         "soe__enemy-card",
