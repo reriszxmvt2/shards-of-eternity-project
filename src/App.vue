@@ -1,96 +1,28 @@
 <template>
-  <div v-if="screen === 'title'" class="soe">
-    <div class="soe__screen soe__screen--title">
-      <div class="soe__title-stars">{{ "* ".repeat(16) }}</div>
-      <div class="soe__title-kicker">AN 8-BIT LEGEND</div>
-      <div class="soe__title-main">SHARDS OF</div>
-      <div class="soe__title-sub">ETERNITY</div>
-      <div class="soe__title-thai">ชิ้นส่วนแห่งนิรันดร์</div>
-      <div class="soe__title-lore">
-        อาณาจักรล่มสลาย มังกรถูกจองจำ
-        <br />
-        <span class="soe__title-lore-note">
-          A kingdom fallen. A dragon enslaved.
-        </span>
-      </div>
-      <div class="soe__title-party">[W] [M] [A]</div>
-      <ActionButton :color="COLORS.gold" @click="screen = 'scene'">
-        &gt;&gt; เริ่มเกม / PRESS START
-      </ActionButton>
-      <div class="soe__title-meta">
-        นักรบ / นักเวทย์ / นักธนู · ต่อสู้ผลัดเทิร์น
-        <br />
-        เนื้อเรื่องสองทาง · สองตอนจบ · ทุกการเลือกมีความหมาย
-        <br />
-        <span class="soe__title-meta-note">
-          Every choice echoes. Every mercy counts.
-        </span>
-      </div>
-    </div>
-  </div>
+  <TitleScreen
+    v-if="screen === 'title'"
+    :colors="COLORS"
+    @start="screen = 'scene'"
+  />
 
-  <div v-else-if="screen === 'scene'" class="soe" @click="advanceSceneLine">
-    <div class="soe__screen soe__screen--scene">
-      <div v-if="scene.title" class="soe__scene-title">
-        {{ scene.title }}
-      </div>
-      <div class="soe__panel soe__panel--scene">
-        <div v-if="currentLine.speaker" class="soe__scene-speaker">
-          [{{ currentLine.speaker }}]
-        </div>
-        <div class="soe__scene-body">
-          <div class="soe__scene-text" :style="textColorStyle(currentLine.color)">
-            {{ currentLine.thai }}
-          </div>
-          <div v-if="currentLine.english" class="soe__scene-translation">
-            {{ currentLine.english }}
-          </div>
-        </div>
-        <div class="soe__scene-progress">
-          {{ lineIndex + 1 }}/{{ sceneLines.length }} &gt;
-        </div>
-      </div>
-      <div class="soe__party-strip">
-        <div
-          v-for="member in party"
-          :key="member.id"
-          class="soe__party-chip"
-          :style="partyStyle(member, '44')"
-        >
-          {{ member.e }} {{ member.name }}
-          <StatusBar :v="member.hp" :max="member.mxHp" :color="COLORS.hp" :w="50" />
-          <span class="soe__muted"> {{ member.hp }}</span>
-        </div>
-      </div>
-      <div class="soe__continue-hint">
-        — คลิกเพื่อดำเนินต่อ / CLICK TO CONTINUE —
-      </div>
-    </div>
-  </div>
+  <SceneScreen
+    v-else-if="screen === 'scene'"
+    :colors="COLORS"
+    :current-line="currentLine"
+    :line-index="lineIndex"
+    :party="party"
+    :scene="scene"
+    :scene-lines="sceneLines"
+    @advance="advanceSceneLine"
+  />
 
-  <div v-else-if="screen === 'choice'" class="soe">
-    <div class="soe__screen soe__screen--choice">
-      <div class="soe__choice-title">
-        ── การตัดสินใจของคุณ / YOUR CHOICE ──
-      </div>
-      <div class="soe__panel soe__panel--gold soe__choice-panel">
-        <div class="soe__choice-text">{{ choiceText.thai }}</div>
-        <div v-if="choiceText.english" class="soe__choice-translation">
-          {{ choiceText.english }}
-        </div>
-      </div>
-      <div class="soe__choice-list">
-        <ActionButton
-          v-for="choice in scene.choices || []"
-          :key="choice.text"
-          :color="COLORS.blue"
-          @click="handleChoice(choice)"
-        >
-          {{ choice.text }}
-        </ActionButton>
-      </div>
-    </div>
-  </div>
+  <ChoiceScreen
+    v-else-if="screen === 'choice'"
+    :choice-text="choiceText"
+    :colors="COLORS"
+    :scene="scene"
+    @choose="handleChoice"
+  />
 
   <div v-else-if="screen === 'shop'" class="soe">
     <div class="soe__screen soe__screen--shop">
@@ -338,33 +270,13 @@
     </div>
   </div>
 
-  <div v-else-if="screen === 'ending'" class="soe">
-    <div class="soe__screen soe__screen--ending">
-      <div class="soe__ending-title" :style="endingTitleStyle">
-        {{ scene.title }}
-      </div>
-      <div class="soe__ending-panel" :style="endingPanelStyle">
-        <div v-for="(line, index) in scene.lines || []" :key="index" class="soe__ending-line">
-          <div class="soe__ending-text" :style="textColorStyle(line[2] || COLORS.white)">
-            {{ splitText(line[1] || '').thai }}
-          </div>
-          <div v-if="splitText(line[1] || '').english" class="soe__ending-translation">
-            {{ splitText(line[1] || '').english }}
-          </div>
-        </div>
-      </div>
-      <div class="soe__ending-note">
-        {{
-          storyFlags.spared
-            ? "เพชรโตะ เลือกเมตตา — ชีวิตหนึ่งที่ช่วยไว้ เปลี่ยนอีกหลายชีวิต"
-            : "ราคาของการแก้แค้น คือคำถามที่ไม่มีวันจางหาย"
-        }}
-      </div>
-      <ActionButton :color="COLORS.gold" @click="resetGame">
-        &gt;&gt; เล่นอีกครั้ง / PLAY AGAIN
-      </ActionButton>
-    </div>
-  </div>
+  <EndingScreen
+    v-else-if="screen === 'ending'"
+    :colors="COLORS"
+    :scene="scene"
+    :story-flags="storyFlags"
+    @reset="resetGame"
+  />
 
   <div v-else class="soe">
     <div class="soe__loading">Loading...</div>
@@ -373,6 +285,10 @@
 
 <script>
 import "../shards_of_eternity.css";
+import ChoiceScreen from "./components/screens/ChoiceScreen.vue";
+import EndingScreen from "./components/screens/EndingScreen.vue";
+import SceneScreen from "./components/screens/SceneScreen.vue";
+import TitleScreen from "./components/screens/TitleScreen.vue";
 import ActionButton from "./components/ui/ActionButton.vue";
 import StatusBar from "./components/ui/StatusBar.vue";
 import {
@@ -386,7 +302,14 @@ import {
 
 export default {
   name: "App",
-  components: { ActionButton, StatusBar },
+  components: {
+    ActionButton,
+    ChoiceScreen,
+    EndingScreen,
+    SceneScreen,
+    StatusBar,
+    TitleScreen,
+  },
   data() {
     return {
       COLORS,
@@ -459,18 +382,6 @@ export default {
           .join(" · ") || "ว่างเปล่า"
       );
     },
-    endingTitleStyle() {
-      return {
-        "--soe-ending-color": this.scene.titleColor,
-        "--soe-ending-shadow": `0 0 14px ${this.scene.titleColor}55`,
-      };
-    },
-    endingPanelStyle() {
-      return {
-        "--soe-ending-color": this.scene.titleColor,
-        "--soe-ending-panel-shadow": `0 0 16px ${this.scene.titleColor}22`,
-      };
-    },
   },
   watch: {
     battleLog() {
@@ -485,9 +396,6 @@ export default {
     splitText(text) {
       const [thai, english] = String(text).split("\n//");
       return { thai, english };
-    },
-    textColorStyle(color) {
-      return { "--soe-text-color": color };
     },
     partyStyle(member, opacity) {
       return {
