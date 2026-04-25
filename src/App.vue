@@ -24,59 +24,18 @@
     @choose="handleChoice"
   />
 
-  <div v-else-if="screen === 'shop'" class="soe">
-    <div class="soe__screen soe__screen--shop">
-      <div class="soe__shop-header">
-        <div class="soe__shop-title">ร้านค้าค่ายต่อต้าน / RESISTANCE CAMP SHOP</div>
-        <div class="soe__shop-gold">ทอง / GOLD: {{ gold }}</div>
-      </div>
-      <div class="soe__shop-party">
-        <div
-          v-for="member in party"
-          :key="member.id"
-          class="soe__shop-member"
-          :style="partyStyle(member, '55')"
-        >
-          {{ member.e }} {{ member.name }}<br />
-          <span class="soe__stat-label">HP </span>
-          <StatusBar :v="member.hp" :max="member.mxHp" :color="COLORS.hp" :w="52" />
-          <br />
-          <span class="soe__stat-label">MP </span>
-          <StatusBar :v="member.mp" :max="member.mxMp" :color="COLORS.mp" :w="52" />
-          <br />
-          <span class="soe__shop-atk">ATK:{{ member.atk }}</span>
-        </div>
-      </div>
-      <div class="soe__panel">
-        <div v-for="item in SHOP_ITEMS" :key="item.id" class="soe__shop-item">
-          <div>
-            <div
-              :class="[
-                'soe__shop-item-name',
-                isUpgradeOwned(item) && 'soe__shop-item-name--owned',
-              ]"
-            >
-              {{ item.name }}
-            </div>
-            <div class="soe__shop-item-desc">{{ item.d }}</div>
-          </div>
-          <ActionButton
-            small
-            :disabled="isUpgradeOwned(item) || gold < item.price"
-            :color="shopButtonColor(item)"
-            @click="handleBuyItem(item)"
-          >
-            {{ isUpgradeOwned(item) ? "ซื้อแล้ว" : `${item.price}G` }}
-          </ActionButton>
-        </div>
-      </div>
-      <div v-if="shopMsg" class="soe__shop-message">{{ shopMsg }}</div>
-      <div class="soe__inventory-summary">ไอเทม: {{ inventorySummary }}</div>
-      <ActionButton :color="COLORS.gold" @click="navigateToScene('s_act3')">
-        &gt;&gt; มุ่งหน้าถ้ำ Vaelthorn
-      </ActionButton>
-    </div>
-  </div>
+  <ShopScreen
+    v-else-if="screen === 'shop'"
+    :colors="COLORS"
+    :gold="gold"
+    :inventory="inventory"
+    :party="party"
+    :purchased-upgrades="purchasedUpgrades"
+    :shop-items="SHOP_ITEMS"
+    :shop-msg="shopMsg"
+    @buy="handleBuyItem"
+    @continue="navigateToScene('s_act3')"
+  />
 
   <div v-else-if="screen === 'battle'" class="soe soe--battle">
     <div v-if="!battle" class="soe__loading">Loading...</div>
@@ -288,6 +247,7 @@ import "../shards_of_eternity.css";
 import ChoiceScreen from "./components/screens/ChoiceScreen.vue";
 import EndingScreen from "./components/screens/EndingScreen.vue";
 import SceneScreen from "./components/screens/SceneScreen.vue";
+import ShopScreen from "./components/screens/ShopScreen.vue";
 import TitleScreen from "./components/screens/TitleScreen.vue";
 import ActionButton from "./components/ui/ActionButton.vue";
 import StatusBar from "./components/ui/StatusBar.vue";
@@ -307,6 +267,7 @@ export default {
     ChoiceScreen,
     EndingScreen,
     SceneScreen,
+    ShopScreen,
     StatusBar,
     TitleScreen,
   },
@@ -375,13 +336,6 @@ export default {
     availableInventory() {
       return this.inventory.filter((item) => item.count > 0);
     },
-    inventorySummary() {
-      return (
-        this.availableInventory
-          .map((item) => `${item.name} x${item.count}`)
-          .join(" · ") || "ว่างเปล่า"
-      );
-    },
   },
   watch: {
     battleLog() {
@@ -396,12 +350,6 @@ export default {
     splitText(text) {
       const [thai, english] = String(text).split("\n//");
       return { thai, english };
-    },
-    partyStyle(member, opacity) {
-      return {
-        "--soe-party-color": member.color,
-        "--soe-party-border": `${member.color}${opacity}`,
-      };
     },
     appendBattleLog(messages, previousLog = this.battleLog) {
       return [...previousLog, ...messages].filter(Boolean).slice(-8);
@@ -940,13 +888,6 @@ export default {
       this.selectedPartyIndex = 0;
       this.battleMenu = "main";
       this.pendingBattleAction = null;
-    },
-    isUpgradeOwned(item) {
-      return item.type === "upgrade" && this.purchasedUpgrades.includes(item.id);
-    },
-    shopButtonColor(item) {
-      if (this.isUpgradeOwned(item)) return COLORS.gray;
-      return this.gold >= item.price ? COLORS.green : COLORS.red;
     },
     isActiveMember(memberIndex) {
       return memberIndex === this.selectedPartyIndex && this.battlePhase === "player";
