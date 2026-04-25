@@ -23,9 +23,14 @@ export default {
     shards: { type: Array, required: true },
     visible: { type: Boolean, default: true },
   },
+  computed: {
+    ownedShards() {
+      return new Set(this.shards);
+    },
+  },
   methods: {
     hasShard(shardId) {
-      return this.shards.includes(shardId);
+      return this.ownedShards.has(shardId);
     },
     shardStyle(shard) {
       return {
