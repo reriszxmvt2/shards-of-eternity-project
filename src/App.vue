@@ -75,6 +75,8 @@
   <div v-else class="soe">
     <div class="soe__loading">Loading...</div>
   </div>
+
+  <div class="soe__credit">Natthaphong P. Phattanakit (Phetto)</div>
 </template>
 
 <script>
