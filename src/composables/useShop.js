@@ -7,7 +7,7 @@ export const shopMethods = {
 
     if (shopItem.type === "upgrade") {
       if (this.purchasedUpgrades.includes(shopItem.id)) {
-        this.flashShopMessage("อัพเกรดแล้ว!");
+        this.flashShopMessage("อัปเกรดแล้ว!");
         return;
       }
 

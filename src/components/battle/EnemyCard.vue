@@ -33,7 +33,7 @@
       v-if="enemy.stunned && enemy.alive"
       class="soe__enemy-status soe__enemy-status--stunned"
     >
-      งัก!
+      ชะงัก!
     </div>
     <div v-if="isTargetingEnemy && enemy.alive" class="soe__enemy-click-hint">
       [คลิก]

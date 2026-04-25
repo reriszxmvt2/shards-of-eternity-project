@@ -60,7 +60,7 @@ export default {
       if (this.scene.note) return this.scene.note;
       return this.storyFlags.spared
         ? "เพชรโตะ เลือกเมตตา — ชีวิตหนึ่งที่ช่วยไว้ เปลี่ยนอีกหลายชีวิต"
-        : "ราคาของการแก้แค้น คือคำถามที่ไม่มีวันจางหาย";
+        : "ราคาของการแก้แค้น คือคำถามที่ไม่มีวันเลือนหาย";
     },
     endingTitleStyle() {
       return {

@@ -236,7 +236,7 @@ export const battleMethods = {
               ...nextEnemies[targetIndex],
               stunned: true,
             };
-            battleMessages.push(`${targetEnemy.name} งัก!`);
+            battleMessages.push(`${targetEnemy.name} ชะงัก!`);
           }
         }
       }
@@ -304,7 +304,7 @@ export const battleMethods = {
       setTimeout(() => {
         this.battleLog = this.appendBattleLog([
           `ชนะ! +${totalGoldReward} ทอง!`,
-          totalExpReward > 0 ? `ปาร์ตี้ได้ ${totalExpReward} EXP!` : "",
+          totalExpReward > 0 ? `ทีมได้รับ ${totalExpReward} EXP!` : "",
         ]);
         this.battlePhase = BATTLE_PHASES.victory;
         setTimeout(() => {
@@ -372,7 +372,7 @@ export const battleMethods = {
     nextEnemies.forEach((enemy) => {
       if (!enemy.alive) return;
       if (enemy.stunned) {
-        battleMessages.push(`${enemy.name} งัก! ข้ามเทิร์น`);
+        battleMessages.push(`${enemy.name} ชะงัก! ข้ามเทิร์น`);
         return;
       }
 

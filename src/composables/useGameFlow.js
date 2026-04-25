@@ -18,7 +18,7 @@ const SCREENS_BY_SCENE_TYPE = {
 };
 
 const initialInventory = () => [
-  { id: "potion", name: "HEALTH POTION", d: "Restore 60 HP", count: 2 },
+  { id: "potion", name: "ยาฟื้นฟู / HEALTH POTION", d: "ฟื้น HP 60", count: 2 },
 ];
 
 const hasShard = (shards, shardId) => shards.includes(shardId);
