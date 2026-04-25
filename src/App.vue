@@ -37,197 +37,31 @@
     @continue="navigateToScene('s_act3')"
   />
 
-  <div v-else-if="screen === 'battle'" class="soe soe--battle">
-    <div v-if="!battle" class="soe__loading">Loading...</div>
-    <div v-else class="soe__screen soe__screen--battle">
-      <div class="soe__battle-header">
-        <div class="soe__battle-title">[ การต่อสู้ / BATTLE ]</div>
-        <div class="soe__battle-gold">ทอง: {{ gold }}</div>
-      </div>
-      <div class="soe__enemy-grid">
-        <div
-          v-for="(enemy, enemyIndex) in battle.enemies"
-          :key="enemy.id"
-          :class="enemyCardClass(enemy)"
-          :style="enemyStyle(enemy)"
-          @click="selectEnemyTarget(enemy, enemyIndex)"
-        >
-          <div :class="['soe__enemy-icon', enemy.boss && 'soe__enemy-icon--boss']">
-            {{ enemy.e }}
-          </div>
-          <div :class="['soe__enemy-name', enemy.boss && 'soe__enemy-name--boss']">
-            {{ enemy.name }}
-          </div>
-          <StatusBar
-            :v="enemy.hp"
-            :max="enemy.mxHp"
-            :color="COLORS.hp"
-            :w="enemy.boss ? 90 : 62"
-          />
-          <div :class="['soe__enemy-hp', !enemy.alive && 'soe__enemy-hp--defeated']">
-            {{ enemy.alive ? `${enemy.hp}/${enemy.mxHp}` : "พ่ายแพ้" }}
-          </div>
-          <div v-if="enemy.boss && enemy.alive" class="soe__enemy-badge">★ BOSS</div>
-          <div
-            v-if="enemy.poison && enemy.alive"
-            class="soe__enemy-status soe__enemy-status--poison"
-          >
-            ถูกพิษ
-          </div>
-          <div
-            v-if="enemy.stunned && enemy.alive"
-            class="soe__enemy-status soe__enemy-status--stunned"
-          >
-            งัก!
-          </div>
-          <div v-if="isTargetingEnemy && enemy.alive" class="soe__enemy-click-hint">
-            [คลิก]
-          </div>
-        </div>
-      </div>
-
-      <div ref="logRef" class="soe__panel soe__battle-log">
-        <div
-          v-for="(line, index) in battleLog"
-          :key="`${line}-${index}`"
-          :class="[
-            'soe__battle-log-line',
-            index === battleLog.length - 1 && 'soe__battle-log-line--latest',
-          ]"
-        >
-          {{ line }}
-        </div>
-      </div>
-
-      <div class="soe__battle-party">
-        <div
-          v-for="(member, memberIndex) in party"
-          :key="member.id"
-          :class="battleMemberClass(member, memberIndex)"
-          :style="battleMemberStyle(member, memberIndex)"
-        >
-          <div class="soe__battle-member-row">
-            <span
-              :class="[
-                'soe__battle-member-name',
-                isActiveMember(memberIndex) && 'soe__battle-member-name--active',
-              ]"
-            >
-              {{ member.e }} {{ member.name }}
-            </span>
-            <span :class="battleMemberStateClass(member, memberIndex)">
-              {{ !member.alive ? "KO" : actedPartyIndexes.includes(memberIndex) ? "OK" : "--" }}
-            </span>
-          </div>
-          <div class="soe__battle-member-class">{{ member.cls }}</div>
-          <div class="soe__battle-member-stat soe__battle-member-stat--hp">
-            <span class="soe__muted">HP </span>
-            <StatusBar :v="member.hp" :max="member.mxHp" :color="COLORS.hp" :w="52" />
-            <span
-              :class="[
-                'soe__battle-member-value',
-                member.hp < member.mxHp * 0.3 && 'soe__battle-member-value--danger',
-              ]"
-            >
-              {{ member.hp }}
-            </span>
-          </div>
-          <div class="soe__battle-member-stat">
-            <span class="soe__muted">MP </span>
-            <StatusBar :v="member.mp" :max="member.mxMp" :color="COLORS.mp" :w="52" />
-            <span class="soe__battle-member-value"> {{ member.mp }}</span>
-          </div>
-          <div v-if="member.buf > 0" class="soe__battle-member-buff">
-            ATK+{{ member.buf }}({{ member.bufT }}T)
-          </div>
-        </div>
-      </div>
-
-      <div v-if="canAct" class="soe__panel soe__panel--gold">
-        <div class="soe__action-title">
-          {{ currentMember.e }} {{ currentMember.name }} — เทิร์นของคุณ
-          {{ battleMenu === "target" ? " — คลิกศัตรูด้านบน" : "" }}
-          {{ battleMenu === "targetAlly" ? " — เลือกพันธมิตร" : "" }}
-        </div>
-
-        <div v-if="battleMenu === 'main'" class="soe__action-grid">
-          <ActionButton @click="startTargeting('attack', 0)">[ โจมตี / ATTACK ]</ActionButton>
-          <ActionButton @click="battleMenu = 'skill'">[ สกิล / SKILL ]</ActionButton>
-          <ActionButton @click="battleMenu = 'item'">[ ไอเทม / ITEM ]</ActionButton>
-          <ActionButton @click="handlePartyAction(selectedPartyIndex, 'defend', null, null)">
-            [ ตั้งรับ / DEFEND ]
-          </ActionButton>
-        </div>
-
-        <div v-else-if="battleMenu === 'skill'">
-          <div class="soe__menu-back" @click="battleMenu = 'main'">
-            &lt; กลับ / BACK
-          </div>
-          <div v-for="(skill, skillIndex) in currentMember.skills" :key="skill.name" class="soe__menu-item">
-            <ActionButton
-              :disabled="currentMember.mp < skill.mp"
-              :color="COLORS.purple"
-              @click="selectSkill(skill, skillIndex)"
-            >
-              {{ skill.name }} ({{ skill.mp }}MP) — {{ splitText(skill.desc).thai }}
-              <span v-if="splitText(skill.desc).english" class="soe__button-note">
-                / {{ splitText(skill.desc).english }}
-              </span>
-            </ActionButton>
-          </div>
-        </div>
-
-        <div v-else-if="battleMenu === 'item'">
-          <div class="soe__menu-back" @click="battleMenu = 'main'">
-            &lt; กลับ / BACK
-          </div>
-          <div v-if="availableInventory.length === 0" class="soe__empty-message">
-            ไม่มีไอเทม
-          </div>
-          <div v-for="item in availableInventory" :key="item.id" class="soe__menu-item">
-            <ActionButton :color="COLORS.green" @click="selectItem(item)">
-              {{ item.name }} x{{ item.count }} — {{ item.d }}
-            </ActionButton>
-          </div>
-        </div>
-
-        <div v-else-if="battleMenu === 'targetAlly'">
-          <div class="soe__menu-back" @click="cancelTargeting">
-            &lt; ยกเลิก / CANCEL
-          </div>
-          <div v-for="(member, memberIndex) in party" :key="member.id" class="soe__menu-item">
-            <ActionButton :color="member.color" @click="selectAllyTarget(memberIndex)">
-              {{ member.e }} {{ member.name }} — HP:{{ member.hp }}/{{ member.mxHp }}
-              {{ !member.alive ? " (KO)" : "" }}
-            </ActionButton>
-          </div>
-        </div>
-
-        <div v-else-if="battleMenu === 'target'" class="soe__target-prompt">
-          👆 คลิกศัตรูด้านบน
-          <span class="soe__target-cancel" @click="cancelTargeting">ยกเลิก</span>
-        </div>
-      </div>
-
-      <div v-if="battlePhase === 'enemy'" class="soe__phase-message soe__phase-message--enemy">
-        เทิร์นศัตรู / ENEMY TURN...
-      </div>
-      <div v-if="battlePhase === 'victory'" class="soe__phase-message soe__phase-message--victory">
-        <div class="soe__phase-title soe__phase-title--victory">
-          ** ชนะ! / VICTORY! **
-        </div>
-        <div class="soe__phase-subtitle">กำลังดำเนินต่อ...</div>
-      </div>
-      <div v-if="battlePhase === 'defeat'" class="soe__phase-message soe__phase-message--defeat">
-        <div class="soe__phase-title soe__phase-title--defeat">
-          เกมจบ / GAME OVER
-        </div>
-        <ActionButton :color="COLORS.red" @click="resetGame">
-          กลับหน้าหลัก / RETURN TO TITLE
-        </ActionButton>
-      </div>
-    </div>
-  </div>
+  <BattleScreen
+    v-else-if="screen === 'battle'"
+    :acted-party-indexes="actedPartyIndexes"
+    :available-inventory="availableInventory"
+    :battle="battle"
+    :battle-log="battleLog"
+    :battle-menu="battleMenu"
+    :battle-phase="battlePhase"
+    :can-act="canAct"
+    :colors="COLORS"
+    :current-member="currentMember"
+    :gold="gold"
+    :is-targeting-enemy="isTargetingEnemy"
+    :party="party"
+    :selected-party-index="selectedPartyIndex"
+    @cancel-targeting="cancelTargeting"
+    @defend="handlePartyAction(selectedPartyIndex, 'defend', null, null)"
+    @reset="resetGame"
+    @select-ally-target="selectAllyTarget"
+    @select-enemy-target="selectEnemyTarget"
+    @select-item="selectItem"
+    @select-skill="selectSkill"
+    @set-menu="battleMenu = $event"
+    @start-targeting="startTargeting"
+  />
 
   <EndingScreen
     v-else-if="screen === 'ending'"
@@ -244,13 +78,12 @@
 
 <script>
 import "../shards_of_eternity.css";
+import BattleScreen from "./components/screens/BattleScreen.vue";
 import ChoiceScreen from "./components/screens/ChoiceScreen.vue";
 import EndingScreen from "./components/screens/EndingScreen.vue";
 import SceneScreen from "./components/screens/SceneScreen.vue";
 import ShopScreen from "./components/screens/ShopScreen.vue";
 import TitleScreen from "./components/screens/TitleScreen.vue";
-import ActionButton from "./components/ui/ActionButton.vue";
-import StatusBar from "./components/ui/StatusBar.vue";
 import {
   BATTLES,
   COLORS,
@@ -263,12 +96,11 @@ import {
 export default {
   name: "App",
   components: {
-    ActionButton,
+    BattleScreen,
     ChoiceScreen,
     EndingScreen,
     SceneScreen,
     ShopScreen,
-    StatusBar,
     TitleScreen,
   },
   data() {
@@ -335,15 +167,6 @@ export default {
     },
     availableInventory() {
       return this.inventory.filter((item) => item.count > 0);
-    },
-  },
-  watch: {
-    battleLog() {
-      this.$nextTick(() => {
-        if (this.$refs.logRef) {
-          this.$refs.logRef.scrollTop = this.$refs.logRef.scrollHeight;
-        }
-      });
     },
   },
   methods: {
@@ -888,54 +711,6 @@ export default {
       this.selectedPartyIndex = 0;
       this.battleMenu = "main";
       this.pendingBattleAction = null;
-    },
-    isActiveMember(memberIndex) {
-      return memberIndex === this.selectedPartyIndex && this.battlePhase === "player";
-    },
-    enemyCardClass(enemy) {
-      return [
-        "soe__enemy-card",
-        enemy.boss && "soe__enemy-card--boss",
-        !enemy.alive && "soe__enemy-card--defeated",
-        this.isTargetingEnemy && enemy.alive && "soe__enemy-card--targetable",
-      ];
-    },
-    enemyStyle(enemy) {
-      return {
-        "--soe-enemy-color": enemy.color,
-        "--soe-enemy-border": enemy.alive
-          ? this.isTargetingEnemy
-            ? COLORS.red
-            : enemy.color
-          : "#222244",
-        "--soe-enemy-shadow": enemy.boss && enemy.alive ? `0 0 18px ${enemy.color}44` : "none",
-      };
-    },
-    battleMemberClass(member, memberIndex) {
-      return [
-        "soe__battle-member",
-        this.isActiveMember(memberIndex) && "soe__battle-member--active",
-        !member.alive && "soe__battle-member--ko",
-      ];
-    },
-    battleMemberStyle(member, memberIndex) {
-      const hasActed = this.actedPartyIndexes.includes(memberIndex);
-      return {
-        "--soe-member-color": member.color,
-        "--soe-member-border": this.isActiveMember(memberIndex)
-          ? COLORS.gold
-          : hasActed
-            ? "#334455"
-            : `${member.color}88`,
-      };
-    },
-    battleMemberStateClass(member, memberIndex) {
-      return [
-        "soe__battle-member-state",
-        this.actedPartyIndexes.includes(memberIndex) &&
-          "soe__battle-member-state--acted",
-        !member.alive && "soe__battle-member-state--ko",
-      ];
     },
   },
 };
