@@ -1,12 +1,42 @@
 import { BATTLES, createEnemiesFromKeys } from "../gameData";
 
+const BATTLE_KEYS = {
+  finalBoss: "b4",
+  vaelthorn: "b3",
+};
+
+const BATTLE_MENUS = {
+  main: "main",
+  targetEnemy: "target",
+  targetAlly: "targetAlly",
+};
+
+const BATTLE_PHASES = {
+  enemy: "enemy",
+  defeat: "defeat",
+  player: "player",
+  victory: "victory",
+};
+
+const BOSS_SPECIAL_ATTACKS = {
+  default: ["ไฟมังกร", "ฟาดหาง", "คำรามโบราณ"],
+  MALACHAR: ["เศษนิรันดร์", "ตราผนึก", "คำสาปราชสำนัก"],
+};
+
+const AREA_SPECIAL_ATTACKS = new Set(["ไฟมังกร", "เศษนิรันดร์"]);
+
+const getRandomItem = (items) => items[Math.floor(Math.random() * items.length)];
+
+const getBossSpecialAttacks = (enemy) =>
+  BOSS_SPECIAL_ATTACKS[enemy.name] || BOSS_SPECIAL_ATTACKS.default;
+
 export const battleComputed = {
   currentMember() {
     return this.party[this.selectedPartyIndex];
   },
   canAct() {
     return (
-      this.battlePhase === "player" &&
+      this.battlePhase === BATTLE_PHASES.player &&
       this.currentMember &&
       this.currentMember.alive &&
       !this.actedPartyIndexes.includes(this.selectedPartyIndex)
@@ -14,8 +44,8 @@ export const battleComputed = {
   },
   isTargetingEnemy() {
     return (
-      this.battlePhase === "player" &&
-      this.battleMenu === "target" &&
+      this.battlePhase === BATTLE_PHASES.player &&
+      this.battleMenu === BATTLE_MENUS.targetEnemy &&
       Boolean(this.pendingBattleAction)
     );
   },
@@ -38,10 +68,10 @@ export const battleMethods = {
 
     const openingMessage = this.splitText(battleDefinition.msg);
     this.battleLog = [`>> ${openingMessage.thai}`];
-    this.battlePhase = "player";
+    this.battlePhase = BATTLE_PHASES.player;
     this.actedPartyIndexes = [];
     this.selectedPartyIndex = 0;
-    this.battleMenu = "main";
+    this.battleMenu = BATTLE_MENUS.main;
     this.pendingBattleAction = null;
     this.screen = "battle";
   },
@@ -56,11 +86,11 @@ export const battleMethods = {
     );
   },
   startTargeting(action, skillIndex) {
-    this.battleMenu = "target";
+    this.battleMenu = BATTLE_MENUS.targetEnemy;
     this.pendingBattleAction = { action, skIdx: skillIndex };
   },
   cancelTargeting() {
-    this.battleMenu = "main";
+    this.battleMenu = BATTLE_MENUS.main;
     this.pendingBattleAction = null;
   },
   selectSkill(skill, skillIndex) {
@@ -72,14 +102,14 @@ export const battleMethods = {
     if (skill.type === "buff" || skill.tar === "all") {
       this.handlePartyAction(this.selectedPartyIndex, "skill", skillIndex, 0);
     } else if (skill.type === "heal") {
-      this.battleMenu = "targetAlly";
+      this.battleMenu = BATTLE_MENUS.targetAlly;
       this.pendingBattleAction = { action: "skill", skIdx: skillIndex };
     } else {
       this.startTargeting("skill", skillIndex);
     }
   },
   selectItem(item) {
-    this.battleMenu = "targetAlly";
+    this.battleMenu = BATTLE_MENUS.targetAlly;
     this.pendingBattleAction = {
       action: "item",
       skIdx: this.inventory.indexOf(item),
@@ -134,7 +164,7 @@ export const battleMethods = {
       const selectedSkill = actingMember.skills[skillIndex];
       if (!selectedSkill || actingMember.mp < selectedSkill.mp) {
         this.battleLog = this.appendBattleLog(["MP ไม่พอ!"]);
-        this.battleMenu = "main";
+        this.battleMenu = BATTLE_MENUS.main;
         return;
       }
 
@@ -213,13 +243,13 @@ export const battleMethods = {
     } else if (actionType === "item") {
       const selectedItem = this.inventory[skillIndex];
       if (!selectedItem || selectedItem.count <= 0) {
-        this.battleMenu = "main";
+        this.battleMenu = BATTLE_MENUS.main;
         return;
       }
 
       const targetMember = nextParty[targetIndex];
       if (!targetMember) {
-        this.battleMenu = "main";
+        this.battleMenu = BATTLE_MENUS.main;
         return;
       }
 
@@ -257,7 +287,7 @@ export const battleMethods = {
     this.battle = { ...this.battle, enemies: nextEnemies };
     this.party = nextParty;
     this.battleLog = this.appendBattleLog(battleMessages);
-    this.battleMenu = "main";
+    this.battleMenu = BATTLE_MENUS.main;
     this.pendingBattleAction = null;
 
     if (nextEnemies.every((enemy) => !enemy.alive)) {
@@ -276,17 +306,9 @@ export const battleMethods = {
           `ชนะ! +${totalGoldReward} ทอง!`,
           totalExpReward > 0 ? `ปาร์ตี้ได้ ${totalExpReward} EXP!` : "",
         ]);
-        this.battlePhase = "victory";
+        this.battlePhase = BATTLE_PHASES.victory;
         setTimeout(() => {
-          if (completedBattle.key === "b4") {
-            this.resolveFinalEnding();
-          } else if (completedBattle.key === "b3") {
-            this.navigateToScene(
-              this.storyFlags.saved ? "c_merchant_twist" : "ch_vaelthorn",
-            );
-          } else {
-            this.navigateToScene(completedBattle.def.after);
-          }
+          this.navigateAfterVictory(completedBattle);
         }, 2200);
       }, 300);
       return;
@@ -303,11 +325,24 @@ export const battleMethods = {
 
     if (waitingPartyIndexes.length > 0) {
       this.selectedPartyIndex = waitingPartyIndexes[0];
-      this.battleMenu = "main";
+      this.battleMenu = BATTLE_MENUS.main;
     } else {
-      this.battlePhase = "enemy";
+      this.battlePhase = BATTLE_PHASES.enemy;
       setTimeout(() => this.handleEnemyTurn(nextParty, nextEnemies), 600);
     }
+  },
+  navigateAfterVictory(completedBattle) {
+    if (completedBattle.key === BATTLE_KEYS.finalBoss) {
+      this.resolveFinalEnding();
+      return;
+    }
+
+    if (completedBattle.key === BATTLE_KEYS.vaelthorn) {
+      this.navigateToScene(this.storyFlags.saved ? "c_merchant_twist" : "ch_vaelthorn");
+      return;
+    }
+
+    this.navigateToScene(completedBattle.def.after);
   },
   handleEnemyTurn(partySnapshot, enemySnapshot) {
     let nextParty = partySnapshot.map((partyMember) => ({
@@ -351,13 +386,8 @@ export const battleMethods = {
       );
 
       if (enemy.boss && Math.random() < 0.35) {
-        const bossSpecialAttacks =
-          enemy.name === "MALACHAR"
-            ? ["เศษนิรันดร์", "ตราผนึก", "คำสาปราชสำนัก"]
-            : ["ไฟมังกร", "ฟาดหาง", "คำรามโบราณ"];
-        const specialAttack =
-          bossSpecialAttacks[Math.floor(Math.random() * bossSpecialAttacks.length)];
-        if (specialAttack === "ไฟมังกร" || specialAttack === "เศษนิรันดร์") {
+        const specialAttack = getRandomItem(getBossSpecialAttacks(enemy));
+        if (AREA_SPECIAL_ATTACKS.has(specialAttack)) {
           nextParty = nextParty.map((partyMember) => {
             if (!partyMember.alive) return partyMember;
             const damage = Math.max(
@@ -366,7 +396,7 @@ export const battleMethods = {
                 Math.floor(partyMember.def * 0.3),
             );
             const nextHp = Math.max(0, partyMember.hp - damage);
-            battleMessages.push(`ไฟมังกร! ${partyMember.name}: ${damage}!`);
+            battleMessages.push(`${specialAttack}! ${partyMember.name}: ${damage}!`);
             return { ...partyMember, hp: nextHp, alive: nextHp > 0 };
           });
           return;
@@ -421,7 +451,7 @@ export const battleMethods = {
     this.battleLog = this.appendBattleLog(battleMessages);
 
     if (!nextParty.some((partyMember) => partyMember.alive)) {
-      this.battlePhase = "defeat";
+      this.battlePhase = BATTLE_PHASES.defeat;
       setTimeout(() => this.navigateToScene("end_bad_fallen"), 1400);
       return;
     }
@@ -433,8 +463,8 @@ export const battleMethods = {
       );
       this.selectedPartyIndex =
         firstAliveMemberIndex >= 0 ? firstAliveMemberIndex : 0;
-      this.battleMenu = "main";
-      this.battlePhase = "player";
+      this.battleMenu = BATTLE_MENUS.main;
+      this.battlePhase = BATTLE_PHASES.player;
     }, 500);
   },
 };
