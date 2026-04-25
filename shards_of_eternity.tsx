@@ -1,6 +1,8 @@
 ﻿import { useState, useEffect, useRef, useCallback } from "react";
 
-const FONT_FAMILY = "'Consolas','Monaco','Menlo','Lucida Console',monospace";
+import type { CSSProperties, ReactNode } from "react";
+import "./shards_of_eternity.css";
+
 const COLORS = {
   bg: "#07071a",
   panel: "#0e0e28",
@@ -18,57 +20,58 @@ const COLORS = {
   mp: "#2266ee",
 };
 
-function StatusBar({ v, max, color, w = 80 }) {
+const cx = (...classes: Array<string | false | null | undefined>) =>
+  classes.filter(Boolean).join(" ");
+const cssVars = (
+  vars: CSSProperties & Record<string, string | number | undefined>,
+) => vars;
+
+type StatusBarProps = {
+  v: number;
+  max: number;
+  color: string;
+  w?: number;
+};
+
+function StatusBar({ v, max, color, w = 80 }: StatusBarProps) {
   const p = Math.max(0, Math.min(100, (v / max) * 100));
   return (
     <div
-      style={{
-        display: "inline-block",
-        width: w,
-        height: 8,
-        background: "#111133",
-        border: "1px solid #223366",
-        verticalAlign: "middle",
-      }}
+      className="soe__status-bar"
+      style={cssVars({ "--soe-status-width": `${w}px` })}
     >
       <div
-        style={{
-          width: `${p}%`,
-          height: "100%",
-          background: color,
-          transition: "width 0.3s",
-        }}
+        className="soe__status-fill"
+        style={cssVars({
+          "--soe-status-fill": color,
+          "--soe-status-percent": `${p}%`,
+        })}
       />
     </div>
   );
 }
 
+type ActionButtonProps = {
+  children: ReactNode;
+  onClick: () => void;
+  color?: string;
+  disabled?: boolean;
+  small?: boolean;
+};
+
 function ActionButton({
   children,
   onClick,
   color = COLORS.border,
-  disabled,
-  small,
-}) {
-  const [hov, setHov] = useState(false);
+  disabled = false,
+  small = false,
+}: ActionButtonProps) {
   return (
     <button
+      className={cx("soe__button", small && "soe__button--small")}
       disabled={disabled}
       onClick={onClick}
-      onMouseEnter={() => setHov(true)}
-      onMouseLeave={() => setHov(false)}
-      style={{
-        background: hov && !disabled ? "#1a1a3a" : COLORS.panel,
-        border: `2px solid ${disabled ? "#333355" : hov ? COLORS.gold : color}`,
-        color: disabled ? "#334466" : hov ? COLORS.gold : COLORS.white,
-        fontFamily: FONT_FAMILY,
-        fontSize: small ? 12 : 14,
-        padding: small ? "6px 12px" : "10px 18px",
-        cursor: disabled ? "not-allowed" : "pointer",
-        transition: "all 0.15s",
-        textAlign: "left",
-        lineHeight: 1.5,
-      }}
+      style={cssVars({ "--soe-button-border": color })}
     >
       {children}
     </button>
@@ -1505,110 +1508,45 @@ export default function Game() {
     setPendingBattleAction(null);
   };
 
-  const wrap = {
-    minHeight: "100vh",
-    background: COLORS.bg,
-    color: COLORS.white,
-    fontFamily: FONT_FAMILY,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 14,
-    boxSizing: "border-box",
-    userSelect: "none",
-  };
-  const pnl = (col = COLORS.border) => ({
-    border: `2px solid ${col}`,
-    background: COLORS.panel,
-    padding: 18,
-    boxShadow: `0 0 12px ${col}22`,
-  });
-
   // TITLE
   if (screen === "title") {
     return (
-      <div style={wrap}>
-        <div style={{ maxWidth: 480, width: "100%", textAlign: "center" }}>
-          <div
-            style={{
-              color: COLORS.gold,
-              fontSize: 11,
-              letterSpacing: 4,
-              marginBottom: 10,
-            }}
-          >
+      <div className="soe">
+        <div className="soe__screen soe__screen--title">
+          <div className="soe__title-stars">
             {"* ".repeat(16)}
           </div>
-          <div
-            style={{
-              fontSize: 11,
-              color: COLORS.purple,
-              letterSpacing: 5,
-              marginBottom: 4,
-            }}
-          >
+          <div className="soe__title-kicker">
             AN 8-BIT LEGEND
           </div>
-          <div
-            style={{
-              fontSize: 28,
-              color: COLORS.gold,
-              letterSpacing: 2,
-              marginBottom: 2,
-              textShadow: `0 0 14px ${COLORS.gold}66`,
-            }}
-          >
+          <div className="soe__title-main">
             SHARDS OF
           </div>
-          <div
-            style={{
-              fontSize: 36,
-              fontWeight: "bold",
-              color: COLORS.white,
-              letterSpacing: 5,
-              marginBottom: 6,
-              textShadow: `0 0 18px ${COLORS.blue}66`,
-            }}
-          >
+          <div className="soe__title-sub">
             ETERNITY
           </div>
-          <div style={{ fontSize: 12, color: COLORS.gray, marginBottom: 6 }}>
+          <div className="soe__title-thai">
             ชิ้นส่วนแห่งนิรันดร์
           </div>
-          <div
-            style={{
-              fontSize: 11,
-              color: COLORS.gray,
-              marginBottom: 26,
-              lineHeight: 2,
-            }}
-          >
+          <div className="soe__title-lore">
             อาณาจักรล่มสลาย มังกรถูกจองจำ
             <br />
-            <span style={{ color: "#334466", fontSize: 10 }}>
+            <span className="soe__title-lore-note">
               A kingdom fallen. A dragon enslaved.
             </span>
           </div>
-          <div style={{ fontSize: 22, marginBottom: 18, color: COLORS.orange }}>
+          <div className="soe__title-party">
             [W] [M] [A]
           </div>
           <ActionButton onClick={() => setScreen("scene")} color={COLORS.gold}>
             &gt;&gt; เริ่มเกม / PRESS START
           </ActionButton>
-          <div
-            style={{
-              marginTop: 26,
-              fontSize: 10,
-              color: COLORS.gray,
-              lineHeight: 2,
-            }}
-          >
+          <div className="soe__title-meta">
             นักรบ / นักเวทย์ / นักธนู · ต่อสู้ผลัดเทิร์น
             <br />
             เนื้อเรื่องสองทาง · สองตอนจบ · ทุกการเลือกมีความหมาย
             <br />
-            <span style={{ color: "#223355", fontSize: 9 }}>
+            <span className="soe__title-meta-note">
               Every choice echoes. Every mercy counts.
             </span>
           </div>
@@ -1624,110 +1562,53 @@ export default function Game() {
     const [spk, txt, col] = cur;
     const tp = (txt || "").split("\n//");
     return (
-      <div style={wrap} onClick={advanceSceneLine}>
-        <div style={{ maxWidth: 540, width: "100%" }}>
+      <div className="soe" onClick={advanceSceneLine}>
+        <div className="soe__screen soe__screen--scene">
           {scene.title && (
-            <div
-              style={{
-                textAlign: "center",
-                color: COLORS.gold,
-                fontSize: 12,
-                letterSpacing: 2,
-                marginBottom: 14,
-              }}
-            >
+            <div className="soe__scene-title">
               {scene.title}
             </div>
           )}
-          <div
-            style={{
-              ...pnl(COLORS.border),
-              minHeight: 200,
-              position: "relative",
-              cursor: "pointer",
-            }}
-          >
+          <div className="soe__panel soe__panel--scene">
             {spk && (
-              <div
-                style={{
-                  color: COLORS.gold,
-                  fontSize: 12,
-                  marginBottom: 10,
-                  letterSpacing: 1,
-                }}
-              >
+              <div className="soe__scene-speaker">
                 [{spk}]
               </div>
             )}
-            <div style={{ minHeight: 80 }}>
+            <div className="soe__scene-body">
               <div
-                style={{
-                  color: col || COLORS.white,
-                  fontSize: 15,
-                  lineHeight: 2.1,
-                  whiteSpace: "pre-wrap",
-                }}
+                className="soe__scene-text"
+                style={cssVars({ "--soe-text-color": col || COLORS.white })}
               >
                 {tp[0]}
               </div>
               {tp[1] && (
-                <div
-                  style={{
-                    color: COLORS.gray,
-                    fontSize: 12,
-                    lineHeight: 1.8,
-                    marginTop: 6,
-                    fontStyle: "italic",
-                    whiteSpace: "pre-wrap",
-                    borderTop: `1px solid #1a1a3a`,
-                    paddingTop: 6,
-                  }}
-                >
+                <div className="soe__scene-translation">
                   {tp[1]}
                 </div>
               )}
             </div>
-            <div
-              style={{
-                position: "absolute",
-                bottom: 8,
-                right: 12,
-                color: COLORS.gray,
-                fontSize: 11,
-              }}
-            >
+            <div className="soe__scene-progress">
               {lineIndex + 1}/{lines.length} &gt;
             </div>
           </div>
-          <div
-            style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}
-          >
+          <div className="soe__party-strip">
             {party.map((p) => (
               <div
                 key={p.id}
-                style={{
-                  border: `1px solid ${p.color}44`,
-                  background: COLORS.dark,
-                  padding: "6px 10px",
-                  fontSize: 11,
-                  color: p.color,
-                  flex: "1 1 100px",
-                }}
+                className="soe__party-chip"
+                style={cssVars({
+                  "--soe-party-color": p.color,
+                  "--soe-party-border": `${p.color}44`,
+                })}
               >
                 {p.e} {p.name}{" "}
                 <StatusBar v={p.hp} max={p.mxHp} color={COLORS.hp} w={50} />
-                <span style={{ color: COLORS.gray }}> {p.hp}</span>
+                <span className="soe__muted"> {p.hp}</span>
               </div>
             ))}
           </div>
-          <div
-            style={{
-              textAlign: "center",
-              fontSize: 10,
-              color: COLORS.gray,
-              marginTop: 8,
-            }}
-          >
+          <div className="soe__continue-hint">
             — คลิกเพื่อดำเนินต่อ / CLICK TO CONTINUE —
           </div>
         </div>
@@ -1739,48 +1620,22 @@ export default function Game() {
   if (screen === "choice") {
     const tp = (scene.text || "").split("\n//");
     return (
-      <div style={wrap}>
-        <div style={{ maxWidth: 520, width: "100%" }}>
-          <div
-            style={{
-              textAlign: "center",
-              color: COLORS.gold,
-              fontSize: 12,
-              letterSpacing: 2,
-              marginBottom: 12,
-            }}
-          >
+      <div className="soe">
+        <div className="soe__screen soe__screen--choice">
+          <div className="soe__choice-title">
             ── การตัดสินใจของคุณ / YOUR CHOICE ──
           </div>
-          <div style={{ ...pnl(COLORS.gold), marginBottom: 20 }}>
-            <div
-              style={{
-                color: COLORS.white,
-                fontSize: 14,
-                lineHeight: 2.1,
-                whiteSpace: "pre-wrap",
-              }}
-            >
+          <div className="soe__panel soe__panel--gold soe__choice-panel">
+            <div className="soe__choice-text">
               {tp[0]}
             </div>
             {tp[1] && (
-              <div
-                style={{
-                  color: COLORS.gray,
-                  fontSize: 11,
-                  lineHeight: 1.8,
-                  marginTop: 8,
-                  fontStyle: "italic",
-                  whiteSpace: "pre-wrap",
-                  borderTop: `1px solid #2a1a00`,
-                  paddingTop: 8,
-                }}
-              >
+              <div className="soe__choice-translation">
                 {tp[1]}
               </div>
             )}
           </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className="soe__choice-list">
             {(scene.choices || []).map((ch, i) => (
               <ActionButton
                 key={i}
@@ -1799,75 +1654,59 @@ export default function Game() {
   // SHOP
   if (screen === "shop") {
     return (
-      <div style={wrap}>
-        <div style={{ maxWidth: 560, width: "100%" }}>
-          <div style={{ textAlign: "center", marginBottom: 14 }}>
-            <div style={{ color: COLORS.gold, fontSize: 14, letterSpacing: 2 }}>
+      <div className="soe">
+        <div className="soe__screen soe__screen--shop">
+          <div className="soe__shop-header">
+            <div className="soe__shop-title">
               ร้านค้าค่ายต่อต้าน / RESISTANCE CAMP SHOP
             </div>
-            <div style={{ color: COLORS.gold, fontSize: 12, marginTop: 4 }}>
+            <div className="soe__shop-gold">
               ทอง / GOLD: {gold}
             </div>
           </div>
-          <div
-            style={{
-              display: "flex",
-              gap: 8,
-              marginBottom: 14,
-              flexWrap: "wrap",
-            }}
-          >
+          <div className="soe__shop-party">
             {party.map((p) => (
               <div
                 key={p.id}
-                style={{
-                  flex: "1 1 110px",
-                  border: `1px solid ${p.color}55`,
-                  background: COLORS.dark,
-                  padding: "8px 10px",
-                  fontSize: 11,
-                  color: p.color,
-                }}
+                className="soe__shop-member"
+                style={cssVars({
+                  "--soe-party-color": p.color,
+                  "--soe-party-border": `${p.color}55`,
+                })}
               >
                 {p.e} {p.name}
                 <br />
-                <span style={{ color: COLORS.gray, fontSize: 10 }}>HP </span>
+                <span className="soe__stat-label">HP </span>
                 <StatusBar v={p.hp} max={p.mxHp} color={COLORS.hp} w={52} />
                 <br />
-                <span style={{ color: COLORS.gray, fontSize: 10 }}>MP </span>
+                <span className="soe__stat-label">MP </span>
                 <StatusBar v={p.mp} max={p.mxMp} color={COLORS.mp} w={52} />
                 <br />
-                <span style={{ color: COLORS.white, fontSize: 10 }}>
+                <span className="soe__shop-atk">
                   ATK:{p.atk}
                 </span>
               </div>
             ))}
           </div>
-          <div style={pnl(COLORS.border)}>
+          <div className="soe__panel">
             {SHOP_ITEMS.map((item) => {
               const ob =
                 purchasedUpgrades.includes(item.id) && item.type === "upgrade";
               return (
                 <div
                   key={item.id}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "9px 0",
-                    borderBottom: `1px solid #1a1a3a`,
-                  }}
+                  className="soe__shop-item"
                 >
                   <div>
                     <div
-                      style={{
-                        color: ob ? COLORS.gray : COLORS.white,
-                        fontSize: 12,
-                      }}
+                      className={cx(
+                        "soe__shop-item-name",
+                        ob && "soe__shop-item-name--owned",
+                      )}
                     >
                       {item.name}
                     </div>
-                    <div style={{ color: COLORS.gray, fontSize: 10 }}>
+                    <div className="soe__shop-item-desc">
                       {item.d}
                     </div>
                   </div>
@@ -1890,25 +1729,11 @@ export default function Game() {
             })}
           </div>
           {shopMsg && (
-            <div
-              style={{
-                textAlign: "center",
-                color: COLORS.green,
-                fontSize: 12,
-                marginTop: 8,
-              }}
-            >
+            <div className="soe__shop-message">
               {shopMsg}
             </div>
           )}
-          <div
-            style={{
-              fontSize: 10,
-              color: COLORS.gray,
-              marginTop: 8,
-              marginBottom: 12,
-            }}
-          >
+          <div className="soe__inventory-summary">
             ไอเทม:{" "}
             {inventory
               .filter((i) => i.count > 0)
@@ -1929,46 +1754,43 @@ export default function Game() {
   // BATTLE
   if (screen === "battle") {
     if (!battle) {
-      return <div style={wrap}>Loading...</div>;
+      return <div className="soe">Loading...</div>;
     }
     const curM = party[selectedPartyIndex];
     const isPlayer = battlePhase === "player";
     return (
-      <div style={{ ...wrap, justifyContent: "flex-start", paddingTop: 14 }}>
-        <div style={{ maxWidth: 580, width: "100%" }}>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              marginBottom: 10,
-            }}
-          >
-            <div style={{ color: COLORS.red, fontSize: 11, letterSpacing: 2 }}>
+      <div className="soe soe--battle">
+        <div className="soe__screen soe__screen--battle">
+          <div className="soe__battle-header">
+            <div className="soe__battle-title">
               [ การต่อสู้ / BATTLE ]
             </div>
-            <div style={{ color: COLORS.gold, fontSize: 11 }}>ทอง: {gold}</div>
+            <div className="soe__battle-gold">ทอง: {gold}</div>
           </div>
-          <div style={{ display: "flex", gap: 10, marginBottom: 12 }}>
+          <div className="soe__enemy-grid">
             {battle.enemies.map((en, ei) => (
               <div
                 key={en.id}
-                style={{
-                  flex: 1,
-                  border: `2px solid ${en.alive ? (battleMenu === "target" && pendingBattleAction ? COLORS.red : en.color) : "#222244"}`,
-                  background: en.boss ? "#180400" : COLORS.panel,
-                  padding: "10px 8px",
-                  textAlign: "center",
-                  opacity: en.alive ? 1 : 0.35,
-                  cursor:
-                    isPlayer &&
+                className={cx(
+                  "soe__enemy-card",
+                  en.boss && "soe__enemy-card--boss",
+                  !en.alive && "soe__enemy-card--defeated",
+                  isPlayer &&
                     battleMenu === "target" &&
                     pendingBattleAction &&
-                    en.alive
-                      ? "crosshair"
-                      : "default",
-                  boxShadow:
+                    en.alive &&
+                    "soe__enemy-card--targetable",
+                )}
+                style={cssVars({
+                  "--soe-enemy-color": en.color,
+                  "--soe-enemy-border": en.alive
+                    ? battleMenu === "target" && pendingBattleAction
+                      ? COLORS.red
+                      : en.color
+                    : "#222244",
+                  "--soe-enemy-shadow":
                     en.boss && en.alive ? `0 0 18px ${en.color}44` : "none",
-                }}
+                })}
                 onClick={() => {
                   if (
                     !isPlayer ||
@@ -1987,20 +1809,18 @@ export default function Game() {
                 }}
               >
                 <div
-                  style={{
-                    fontSize: en.boss ? 26 : 20,
-                    color: en.color,
-                    fontWeight: "bold",
-                  }}
+                  className={cx(
+                    "soe__enemy-icon",
+                    en.boss && "soe__enemy-icon--boss",
+                  )}
                 >
                   {en.e}
                 </div>
                 <div
-                  style={{
-                    color: en.color,
-                    fontSize: en.boss ? 12 : 10,
-                    marginTop: 3,
-                  }}
+                  className={cx(
+                    "soe__enemy-name",
+                    en.boss && "soe__enemy-name--boss",
+                  )}
                 >
                   {en.name}
                 </div>
@@ -2011,30 +1831,27 @@ export default function Game() {
                   w={en.boss ? 90 : 62}
                 />
                 <div
-                  style={{
-                    color: en.alive ? COLORS.white : COLORS.red,
-                    fontSize: 10,
-                    marginTop: 2,
-                  }}
+                  className={cx(
+                    "soe__enemy-hp",
+                    !en.alive && "soe__enemy-hp--defeated",
+                  )}
                 >
                   {en.alive ? `${en.hp}/${en.mxHp}` : "พ่ายแพ้"}
                 </div>
                 {en.boss && en.alive && (
-                  <div style={{ color: en.color, fontSize: 9 }}>★ BOSS</div>
+                  <div className="soe__enemy-badge">★ BOSS</div>
                 )}
                 {en.poison && en.alive && (
-                  <div style={{ color: "#88ff44", fontSize: 9 }}>ถูกพิษ</div>
+                  <div className="soe__enemy-status soe__enemy-status--poison">ถูกพิษ</div>
                 )}
                 {en.stunned && en.alive && (
-                  <div style={{ color: "#ffff44", fontSize: 9 }}>งัก!</div>
+                  <div className="soe__enemy-status soe__enemy-status--stunned">งัก!</div>
                 )}
                 {isPlayer &&
                   battleMenu === "target" &&
                   pendingBattleAction &&
                   en.alive && (
-                    <div
-                      style={{ color: COLORS.red, fontSize: 9, marginTop: 2 }}
-                    >
+                    <div className="soe__enemy-click-hint">
                       [คลิก]
                     </div>
                   )}
@@ -2043,94 +1860,81 @@ export default function Game() {
           </div>
           <div
             ref={logRef}
-            style={{
-              ...pnl(COLORS.border),
-              height: 95,
-              overflowY: "auto",
-              padding: "7px 12px",
-              marginBottom: 10,
-            }}
+            className="soe__panel soe__battle-log"
           >
             {battleLog.map((l, i) => (
               <div
                 key={i}
-                style={{
-                  fontSize: 11,
-                  color:
-                    i === battleLog.length - 1 ? COLORS.white : COLORS.gray,
-                  lineHeight: 1.8,
-                }}
+                className={cx(
+                  "soe__battle-log-line",
+                  i === battleLog.length - 1 && "soe__battle-log-line--latest",
+                )}
               >
                 {l}
               </div>
             ))}
           </div>
-          <div
-            style={{
-              display: "flex",
-              gap: 8,
-              marginBottom: 10,
-              flexWrap: "wrap",
-            }}
-          >
+          <div className="soe__battle-party">
             {party.map((p, pi) => {
               const isAct = pi === selectedPartyIndex && isPlayer;
               const hasAct = actedPartyIndexes.includes(pi);
               return (
                 <div
                   key={p.id}
-                  style={{
-                    flex: "1 1 130px",
-                    border: `2px solid ${isAct ? COLORS.gold : hasAct ? "#334455" : p.color + "88"}`,
-                    background: isAct ? "#1a1800" : COLORS.dark,
-                    padding: "8px 10px",
-                    opacity: p.alive ? 1 : 0.4,
-                  }}
+                  className={cx(
+                    "soe__battle-member",
+                    isAct && "soe__battle-member--active",
+                    !p.alive && "soe__battle-member--ko",
+                  )}
+                  style={cssVars({
+                    "--soe-member-color": p.color,
+                    "--soe-member-border": isAct
+                      ? COLORS.gold
+                      : hasAct
+                        ? "#334455"
+                        : `${p.color}88`,
+                  })}
                 >
-                  <div
-                    style={{ display: "flex", justifyContent: "space-between" }}
-                  >
+                  <div className="soe__battle-member-row">
                     <span
-                      style={{
-                        color: isAct ? COLORS.gold : p.color,
-                        fontSize: 11,
-                      }}
+                      className={cx(
+                        "soe__battle-member-name",
+                        isAct && "soe__battle-member-name--active",
+                      )}
                     >
                       {p.e} {p.name}
                     </span>
                     <span
-                      style={{
-                        color: hasAct
-                          ? COLORS.green
-                          : p.alive
-                            ? COLORS.gray
-                            : COLORS.red,
-                        fontSize: 10,
-                      }}
+                      className={cx(
+                        "soe__battle-member-state",
+                        hasAct && "soe__battle-member-state--acted",
+                        !p.alive && "soe__battle-member-state--ko",
+                      )}
                     >
                       {!p.alive ? "KO" : hasAct ? "OK" : "--"}
                     </span>
                   </div>
-                  <div style={{ fontSize: 9, color: COLORS.gray }}>{p.cls}</div>
-                  <div style={{ marginTop: 4, fontSize: 10 }}>
-                    <span style={{ color: COLORS.gray }}>HP </span>
+                  <div className="soe__battle-member-class">{p.cls}</div>
+                  <div className="soe__battle-member-stat soe__battle-member-stat--hp">
+                    <span className="soe__muted">HP </span>
                     <StatusBar v={p.hp} max={p.mxHp} color={COLORS.hp} w={52} />
                     <span
-                      style={{
-                        color: p.hp < p.mxHp * 0.3 ? COLORS.red : COLORS.white,
-                      }}
+                      className={cx(
+                        "soe__battle-member-value",
+                        p.hp < p.mxHp * 0.3 && "soe__battle-member-value--danger",
+                      )}
                     >
                       {" "}
                       {p.hp}
                     </span>
                   </div>
-                  <div style={{ fontSize: 10 }}>
-                    <span style={{ color: COLORS.gray }}>MP </span>
+                  <div className="soe__battle-member-stat">
+                    <span className="soe__muted">MP </span>
                     <StatusBar v={p.mp} max={p.mxMp} color={COLORS.mp} w={52} />
-                    <span style={{ color: COLORS.white }}> {p.mp}</span>
+                    <span className="soe__battle-member-value"> {p.mp}</span>
                   </div>
                   {p.buf > 0 && (
-                    <div style={{ fontSize: 9, color: COLORS.green }}>
+                    <div className="soe__battle-member-buff">
                       ATK+{p.buf}({p.bufT}T)
                     </div>
                   )}
@@ -2142,22 +1946,14 @@ export default function Game() {
             curM &&
             curM.alive &&
             !actedPartyIndexes.includes(selectedPartyIndex) && (
-              <div style={pnl(COLORS.gold)}>
-                <div
-                  style={{ color: COLORS.gold, fontSize: 11, marginBottom: 8 }}
-                >
+              <div className="soe__panel soe__panel--gold">
+                <div className="soe__action-title">
                   {curM.e} {curM.name} — เทิร์นของคุณ
                   {battleMenu === "target" && " — คลิกศัตรูด้านบน"}
                   {battleMenu === "targetAlly" && " — เลือกพันธมิตร"}
                 </div>
                 {battleMenu === "main" && (
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: 8,
-                    }}
-                  >
+                  <div className="soe__action-grid">
                     {[
                       {
                         label: "[ โจมตี / ATTACK ]",
@@ -2197,12 +1993,7 @@ export default function Game() {
                 {battleMenu === "skill" && (
                   <div>
                     <div
-                      style={{
-                        fontSize: 10,
-                        color: COLORS.blue,
-                        marginBottom: 6,
-                        cursor: "pointer",
-                      }}
+                      className="soe__menu-back"
                       onClick={() => setBattleMenu("main")}
                     >
                       &lt; กลับ / BACK
@@ -2210,7 +2001,7 @@ export default function Game() {
                     {curM.skills.map((sk, si) => {
                       const dp = sk.desc.split("\n//");
                       return (
-                        <div key={si} style={{ marginBottom: 6 }}>
+                        <div key={si} className="soe__menu-item">
                           <ActionButton
                             onClick={() => {
                               if (curM.mp < sk.mp) {
@@ -2245,9 +2036,7 @@ export default function Game() {
                           >
                             {sk.name} ({sk.mp}MP) — {dp[0]}
                             {dp[1] && (
-                              <span
-                                style={{ color: COLORS.gray, fontSize: 10 }}
-                              >
+                              <span className="soe__button-note">
                                 {" "}
                                 / {dp[1]}
                               </span>
@@ -2261,27 +2050,20 @@ export default function Game() {
                 {battleMenu === "item" && (
                   <div>
                     <div
-                      style={{
-                        fontSize: 10,
-                        color: COLORS.blue,
-                        marginBottom: 6,
-                        cursor: "pointer",
-                      }}
+                      className="soe__menu-back"
                       onClick={() => setBattleMenu("main")}
                     >
                       &lt; กลับ / BACK
                     </div>
                     {inventory.filter((i) => i.count > 0).length === 0 && (
-                      <div
-                        style={{ color: COLORS.gray, fontSize: 12, padding: 8 }}
-                      >
+                      <div className="soe__empty-message">
                         ไม่มีไอเทม
                       </div>
                     )}
                     {inventory
                       .filter((i) => i.count > 0)
                       .map((item) => (
-                        <div key={item.id} style={{ marginBottom: 6 }}>
+                        <div key={item.id} className="soe__menu-item">
                           <ActionButton
                             onClick={() => {
                               setBattleMenu("targetAlly");
@@ -2301,12 +2083,7 @@ export default function Game() {
                 {battleMenu === "targetAlly" && (
                   <div>
                     <div
-                      style={{
-                        fontSize: 10,
-                        color: COLORS.blue,
-                        marginBottom: 6,
-                        cursor: "pointer",
-                      }}
+                      className="soe__menu-back"
                       onClick={() => {
                         setBattleMenu("main");
                         setPendingBattleAction(null);
@@ -2315,7 +2092,7 @@ export default function Game() {
                       &lt; ยกเลิก / CANCEL
                     </div>
                     {party.map((p, pi) => (
-                      <div key={p.id} style={{ marginBottom: 6 }}>
+                      <div key={p.id} className="soe__menu-item">
                         <ActionButton
                           onClick={() => {
                             if (pendingBattleAction) {
@@ -2337,15 +2114,10 @@ export default function Game() {
                   </div>
                 )}
                 {battleMenu === "target" && (
-                  <div style={{ fontSize: 12, color: COLORS.white }}>
+                  <div className="soe__target-prompt">
                     👆 คลิกศัตรูด้านบน
                     <span
-                      style={{
-                        cursor: "pointer",
-                        color: COLORS.blue,
-                        marginLeft: 12,
-                        fontSize: 11,
-                      }}
+                      className="soe__target-cancel"
                       onClick={() => {
                         setBattleMenu("main");
                         setPendingBattleAction(null);
@@ -2358,49 +2130,23 @@ export default function Game() {
               </div>
             )}
           {battlePhase === "enemy" && (
-            <div
-              style={{
-                textAlign: "center",
-                border: `1px solid ${COLORS.red}`,
-                padding: 12,
-                color: COLORS.red,
-                fontSize: 13,
-              }}
-            >
+            <div className="soe__phase-message soe__phase-message--enemy">
               เทิร์นศัตรู / ENEMY TURN...
             </div>
           )}
           {battlePhase === "victory" && (
-            <div
-              style={{
-                textAlign: "center",
-                border: `2px solid ${COLORS.gold}`,
-                padding: 14,
-                background: "#0a0a0a",
-              }}
-            >
-              <div
-                style={{ color: COLORS.gold, fontSize: 16, marginBottom: 4 }}
-              >
+            <div className="soe__phase-message soe__phase-message--victory">
+              <div className="soe__phase-title soe__phase-title--victory">
                 ** ชนะ! / VICTORY! **
               </div>
-              <div style={{ color: COLORS.green, fontSize: 11 }}>
+              <div className="soe__phase-subtitle">
                 กำลังดำเนินต่อ...
               </div>
             </div>
           )}
           {battlePhase === "defeat" && (
-            <div
-              style={{
-                textAlign: "center",
-                border: `2px solid ${COLORS.red}`,
-                padding: 14,
-                background: "#1a0000",
-              }}
-            >
-              <div
-                style={{ color: COLORS.red, fontSize: 16, marginBottom: 12 }}
-              >
+            <div className="soe__phase-message soe__phase-message--defeat">
+              <div className="soe__phase-title soe__phase-title--defeat">
                 เกมจบ / GAME OVER
               </div>
               <ActionButton onClick={resetGame} color={COLORS.red}>
@@ -2416,52 +2162,36 @@ export default function Game() {
   // ENDING
   if (screen === "ending") {
     return (
-      <div style={wrap}>
-        <div style={{ maxWidth: 500, width: "100%", textAlign: "center" }}>
+      <div className="soe">
+        <div className="soe__screen soe__screen--ending">
           <div
-            style={{
-              color: scene.titleColor,
-              fontSize: 17,
-              marginBottom: 20,
-              letterSpacing: 1,
-              textShadow: `0 0 14px ${scene.titleColor}55`,
-            }}
+            className="soe__ending-title"
+            style={cssVars({
+              "--soe-ending-color": scene.titleColor,
+              "--soe-ending-shadow": `0 0 14px ${scene.titleColor}55`,
+            })}
           >
             {scene.title}
           </div>
           <div
-            style={{
-              border: `2px solid ${scene.titleColor}`,
-              background: COLORS.panel,
-              padding: 24,
-              marginBottom: 22,
-              boxShadow: `0 0 16px ${scene.titleColor}22`,
-            }}
+            className="soe__ending-panel"
+            style={cssVars({
+              "--soe-ending-color": scene.titleColor,
+              "--soe-ending-panel-shadow": `0 0 16px ${scene.titleColor}22`,
+            })}
           >
             {(scene.lines || []).map((l, i) => {
               const pts = (l[1] || "").split("\n//");
               return (
-                <div key={i} style={{ marginBottom: 4 }}>
+                <div key={i} className="soe__ending-line">
                   <div
-                    style={{
-                      color: l[2] || COLORS.white,
-                      fontSize: 14,
-                      lineHeight: 2.1,
-                      whiteSpace: "pre-wrap",
-                    }}
+                    className="soe__ending-text"
+                    style={cssVars({ "--soe-text-color": l[2] || COLORS.white })}
                   >
                     {pts[0]}
                   </div>
                   {pts[1] && (
-                    <div
-                      style={{
-                        color: COLORS.gray,
-                        fontSize: 11,
-                        lineHeight: 1.7,
-                        fontStyle: "italic",
-                        whiteSpace: "pre-wrap",
-                      }}
-                    >
+                    <div className="soe__ending-translation">
                       {pts[1]}
                     </div>
                   )}
@@ -2469,7 +2199,7 @@ export default function Game() {
               );
             })}
           </div>
-          <div style={{ fontSize: 11, color: COLORS.gray, marginBottom: 20 }}>
+          <div className="soe__ending-note">
             {storyFlags.spared
               ? "เพชรโตะ เลือกเมตตา — ชีวิตหนึ่งที่ช่วยไว้ เปลี่ยนอีกหลายชีวิต"
               : "ราคาของการแก้แค้น คือคำถามที่ไม่มีวันจางหาย"}
@@ -2483,8 +2213,8 @@ export default function Game() {
   }
 
   return (
-    <div style={wrap}>
-      <div style={{ fontSize: 14 }}>Loading...</div>
+    <div className="soe">
+      <div className="soe__loading">Loading...</div>
     </div>
   );
 }
