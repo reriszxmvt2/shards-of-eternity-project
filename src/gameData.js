@@ -279,6 +279,7 @@ const createEnemiesFromKeys = (keys) => {
     malachar: {
       name: "MALACHAR",
       e: "(M!)",
+      sprite: GAME_VISUALS.enemies.malachar,
       hp: 420,
       atk: 52,
       def: 24,
@@ -875,7 +876,7 @@ const SCENES = {
   ch_sacrifice: {
     t: "choice",
     bg: "#08000c",
-    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    illustration: GAME_VISUALS.scenes.sealCore,
     text: "ประตูเหนือบัลลังก์เปิดออก เศษหินนิรันดร์ดูดกลืนชีวิตของผู้ลี้ภัยที่ซ่อนอยู่ในถ้ำ\nถ้าคุณหยุดพิธีตอนนี้ มาลาชาร์จะมีเวลาหนีเข้าแกนผนึก\nถ้าคุณไล่ตามเขาทันที ผู้บริสุทธิ์เหล่านั้นจะถูกเผาเป็นเชื้อไฟให้ Shard ชิ้นสุดท้าย\n\n//The gate above the throne opens. Shards of eternity begin feeding on refugees hidden in the cave.\n//If you stop the ritual now, Malachar will gain time to reach the Seal's Core.\n//If you chase him immediately, those innocents will burn as fuel for the final Shard.",
     choices: [
       {
@@ -897,7 +898,7 @@ const SCENES = {
   s_sacrifice_shard: {
     t: "scene",
     bg: "#100800",
-    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    illustration: GAME_VISUALS.scenes.sealCore,
     title: "── ชิ้นส่วนแห่งการเสียสละ / SHARD OF SACRIFICE ──",
     lines: [
       [
@@ -922,7 +923,7 @@ const SCENES = {
   s_party_fracture: {
     t: "scene",
     bg: "#120000",
-    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    illustration: GAME_VISUALS.scenes.sealCore,
     title: "── รอยร้าวของปาร์ตี้ / PARTY FRACTURE ──",
     lines: [
       [
@@ -947,7 +948,7 @@ const SCENES = {
   s_final_act: {
     t: "scene",
     bg: "#000014",
-    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    illustration: GAME_VISUALS.scenes.sealCore,
     title: "── บทสุดท้าย: แกนผนึก / FINAL ACT: THE SEAL'S CORE ──",
     reward: {
       items: [
@@ -1075,7 +1076,7 @@ const SCENES = {
 
   end_happy_1: {
     t: "ending",
-    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    illustration: GAME_VISUALS.scenes.shardsRestored,
     titleColor: COLORS.gold,
     title: "HAPPY ENDING 1: SHARDS OF ETERNITY",
     lines: [
@@ -1109,7 +1110,7 @@ const SCENES = {
 
   end_bad_vaelthorn: {
     t: "ending",
-    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    illustration: GAME_VISUALS.scenes.brokenSeal,
     titleColor: COLORS.red,
     title: "BAD ENDING: THE DRAGON'S SILENCE",
     lines: [
@@ -1166,7 +1167,7 @@ const SCENES = {
 
   end_bad_party: {
     t: "ending",
-    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    illustration: GAME_VISUALS.scenes.brokenSeal,
     titleColor: COLORS.red,
     title: "BAD ENDING: THE BROKEN PARTY",
     lines: [
@@ -1185,7 +1186,7 @@ const SCENES = {
 
   end_bad_memory: {
     t: "ending",
-    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    illustration: GAME_VISUALS.scenes.brokenSeal,
     titleColor: COLORS.red,
     title: "BAD ENDING: NAMELESS TOMORROW",
     lines: [
@@ -1204,7 +1205,7 @@ const SCENES = {
 
   end_bad_sacrifice: {
     t: "ending",
-    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    illustration: GAME_VISUALS.scenes.brokenSeal,
     titleColor: COLORS.red,
     title: "BAD ENDING: PRICE UNPAID",
     lines: [
@@ -1223,7 +1224,7 @@ const SCENES = {
 
   end_bad_shards: {
     t: "ending",
-    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    illustration: GAME_VISUALS.scenes.brokenSeal,
     titleColor: COLORS.red,
     title: "BAD ENDING: SHARDS UNMADE",
     lines: [
