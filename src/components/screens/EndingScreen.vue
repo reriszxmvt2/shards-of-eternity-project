@@ -24,11 +24,7 @@
         </div>
       </div>
       <div class="soe__ending-note">
-        {{
-          storyFlags.spared
-            ? "เพชรโตะ เลือกเมตตา — ชีวิตหนึ่งที่ช่วยไว้ เปลี่ยนอีกหลายชีวิต"
-            : "ราคาของการแก้แค้น คือคำถามที่ไม่มีวันจางหาย"
-        }}
+        {{ endingNote }}
       </div>
       <ActionButton :color="colors.gold" @click="$emit('reset')">
         &gt;&gt; เล่นอีกครั้ง / PLAY AGAIN
@@ -59,6 +55,12 @@ export default {
       return Boolean(
         this.scene.illustration && this.failedIllustration !== this.scene.illustration,
       );
+    },
+    endingNote() {
+      if (this.scene.note) return this.scene.note;
+      return this.storyFlags.spared
+        ? "เพชรโตะ เลือกเมตตา — ชีวิตหนึ่งที่ช่วยไว้ เปลี่ยนอีกหลายชีวิต"
+        : "ราคาของการแก้แค้น คือคำถามที่ไม่มีวันจางหาย";
     },
     endingTitleStyle() {
       return {

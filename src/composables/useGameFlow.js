@@ -1,4 +1,4 @@
-import { COLORS, SCENES, createDefaultParty } from "../gameData";
+import { COLORS, SCENES, SHARDS_REQUIRED, createDefaultParty } from "../gameData";
 
 const initialInventory = () => [
   { id: "potion", name: "HEALTH POTION", d: "Restore 60 HP", count: 2 },
@@ -11,6 +11,7 @@ export const createInitialGameState = () => ({
   party: [createDefaultParty()[0]],
   gold: 50,
   inventory: initialInventory(),
+  shards: [],
   storyFlags: {},
   battle: null,
   battleLog: [],
@@ -73,6 +74,32 @@ export const gameFlowMethods = {
           });
         }
       });
+    }
+
+    if (reward.shards) {
+      const nextShards = new Set(this.shards);
+      reward.shards.forEach((shardId) => nextShards.add(shardId));
+      this.shards = [...nextShards];
+    }
+  },
+  hasAllRequiredShards() {
+    return SHARDS_REQUIRED.every((shardId) => this.shards.includes(shardId));
+  },
+  resolveFinalEnding() {
+    if (!this.storyFlags.spared) {
+      this.navigateToScene("end_bad_vaelthorn");
+    } else if (!this.storyFlags.saved || !this.shards.includes("mercy")) {
+      this.navigateToScene("end_bad_mercy");
+    } else if (this.storyFlags.partyBroken) {
+      this.navigateToScene("end_bad_party");
+    } else if (!this.shards.includes("memory")) {
+      this.navigateToScene("end_bad_memory");
+    } else if (!this.shards.includes("sacrifice")) {
+      this.navigateToScene("end_bad_sacrifice");
+    } else if (!this.hasAllRequiredShards()) {
+      this.navigateToScene("end_bad_shards");
+    } else {
+      this.navigateToScene("end_happy_1");
     }
   },
   navigateToScene(targetSceneId) {

@@ -19,6 +19,46 @@ const COLORS = {
 
 const GAME_VISUALS = pixelArt;
 
+const SHARDS = [
+  {
+    id: "mercy",
+    name: "Mercy",
+    nameTh: "เมตตา",
+    mark: "MRC",
+    color: COLORS.green,
+  },
+  {
+    id: "courage",
+    name: "Courage",
+    nameTh: "กล้าหาญ",
+    mark: "CRG",
+    color: COLORS.gold,
+  },
+  {
+    id: "memory",
+    name: "Memory",
+    nameTh: "ความทรงจำ",
+    mark: "MEM",
+    color: COLORS.purple,
+  },
+  {
+    id: "truth",
+    name: "Truth",
+    nameTh: "ความจริง",
+    mark: "TRU",
+    color: COLORS.blue,
+  },
+  {
+    id: "sacrifice",
+    name: "Sacrifice",
+    nameTh: "เสียสละ",
+    mark: "SAC",
+    color: COLORS.red,
+  },
+];
+
+const SHARDS_REQUIRED = SHARDS.map((shard) => shard.id);
+
 const createDefaultParty = () => [
   {
     id: "phetto",
@@ -236,6 +276,17 @@ const createEnemiesFromKeys = (keys) => {
       color: "#ff6600",
       boss: true,
     },
+    malachar: {
+      name: "MALACHAR",
+      e: "(M!)",
+      hp: 420,
+      atk: 52,
+      def: 24,
+      gold: 0,
+      xp: 0,
+      color: "#ccddff",
+      boss: true,
+    },
   };
   return keys.map((k, i) => ({
     ...D[k],
@@ -263,6 +314,11 @@ const BATTLES = {
     keys: ["vaelthorn"],
     msg: "VAELTHORN โผล่ขึ้นมาจากความมืดนิรันดร์!\n//VAELTHORN rises from the eternal dark!",
     after: "c_boss_after",
+  },
+  b4: {
+    keys: ["malachar"],
+    msg: "มาลาชาร์ยืนอยู่กลางวงแหวน Shards ที่แตกสลาย!\n//Malachar stands inside a ring of broken Shards!",
+    after: "final",
   },
 };
 
@@ -420,6 +476,7 @@ const SCENES = {
         flag: "saved",
         reward: {
           gold: 90,
+          shards: ["mercy"],
           items: [
             { id: "potion", name: "HEALTH POTION", d: "Restore 60 HP", c: 2 },
           ],
@@ -577,6 +634,9 @@ const SCENES = {
     bg: "#1a0a00",
     illustration: GAME_VISUALS.scenes.mountainPass,
     title: "── บทที่ 2: ช่องเขา / ACT II: THE MOUNTAIN PASS ──",
+    reward: {
+      shards: ["courage"],
+    },
     lines: [
       [
         null,
@@ -711,14 +771,215 @@ const SCENES = {
       {
         text: "[A] ทุบตราสัญลักษณ์ ปลดปล่อยมัน / Shatter the Sigil.",
         flag: "spared",
-        next: "end_peace",
+        next: "s_vaelthorn_spared",
       },
       {
         text: "[B] ไม่มีความเมตตา ยุติมันตอนนี้ / No mercy. End this.",
         flag: "killed",
-        next: "end_war",
+        next: "s_vaelthorn_killed",
       },
     ],
+  },
+
+  s_vaelthorn_spared: {
+    t: "scene",
+    bg: "#100014",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    title: "── ชิ้นส่วนแห่งความทรงจำ / SHARD OF MEMORY ──",
+    reward: {
+      shards: ["memory"],
+    },
+    lines: [
+      [
+        null,
+        "ดาบของเพชรโตะฟาดลงบนตราสัญลักษณ์ ไม่ใช่บนลำคอของมังกร\nแสงสีแดงแตกออกเป็นฝุ่น และเสียงร้องของ Vaelthorn กลายเป็นเสียงสะอื้นของผู้ที่ตื่นจากฝันร้าย\n//Phetto's blade falls upon the Sigil, not the dragon's throat.\nThe red light breaks into dust, and Vaelthorn's roar becomes the sob of one waking from a nightmare.",
+        COLORS.white,
+      ],
+      [
+        "VAELTHORN",
+        "ข้าจำได้แล้ว... ลูกของข้า ชื่อของพวกเขา และคืนที่มาลาชาร์ขโมยข้าไปจากตัวข้าเอง\n//I remember now... my children, their names, and the night Malachar stole me from myself.",
+        "#ff8844",
+      ],
+      [
+        null,
+        "เกล็ดมังกรชิ้นหนึ่งแตกออกจากอกของเขา ไม่ใช่เลือด แต่เป็นแสงสีม่วงเก่าราวดวงดาวที่จำชื่อของตนได้\n>> ได้รับ: SHARD OF MEMORY\n//A scale breaks from his chest, not as blood, but as old violet light like a star remembering its own name.\n//>> Received: SHARD OF MEMORY",
+        COLORS.purple,
+      ],
+      [
+        "VAELTHORN",
+        "จงตามมาลาชาร์ไป เขาไม่ได้หนีเพราะแพ้ เขาหนีเพราะได้ยินเสียงของสิ่งที่อยู่หลังนิรันดร์\n//Follow Malachar. He did not flee because he lost. He fled because he heard what waits behind eternity.",
+        "#ff8844",
+      ],
+    ],
+    next: "s_malachar_truth",
+  },
+
+  s_vaelthorn_killed: {
+    t: "scene",
+    bg: "#120000",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    title: "── ความทรงจำที่แตกหัก / BROKEN MEMORY ──",
+    lines: [
+      [
+        null,
+        "ดาบของเพชรโตะพุ่งลงมา Vaelthorn ไม่ได้สู้ตอบ เขาเพียงหลับตาเหมือนพ่อที่เหนื่อยเกินกว่าจะร้องเรียกลูกอีกครั้ง\n//Phetto's blade falls. Vaelthorn does not resist. He only closes his eyes like a father too tired to call for his children again.",
+        COLORS.white,
+      ],
+      [
+        null,
+        "เมื่อร่างมังกรนิ่งลง เศษแสงสีม่วงลอยขึ้น แต่แตกสลายก่อนจะรวมตัวเป็น Shard\nความทรงจำของเขาตายไปพร้อมกับเขา\n//When the dragon grows still, violet light rises, then shatters before it can become a Shard.\nHis memory dies with him.",
+        COLORS.red,
+      ],
+      [
+        "ลีร่า",
+        "เราอาจชนะศึกนี้... แต่เราเพิ่งทำลายกุญแจดอกหนึ่งไป\n//We may have won this battle... but we have destroyed one of the keys.",
+        COLORS.purple,
+      ],
+    ],
+    next: "s_malachar_truth",
+  },
+
+  s_malachar_truth: {
+    t: "scene",
+    bg: "#050014",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    title: "── ความจริงของมาลาชาร์ / MALACHAR'S TRUTH ──",
+    reward: {
+      shards: ["truth"],
+    },
+    lines: [
+      [
+        null,
+        "ที่แท่นหินหลังบัลลังก์มังกร มีแผนที่โลกถูกแกะด้วยเลือดแห้ง\nห้าจุดบนแผนที่เปล่งแสง เหมือนหัวใจที่ถูกแบ่งเป็นชิ้น ๆ\n//Behind the dragon's throne, a world map is carved in dried blood.\nFive points glow upon it, like a heart divided into pieces.",
+        COLORS.gray,
+      ],
+      [
+        "มาลาชาร์",
+        "หากข้าดูเหมือนปีศาจ ก็เพราะมีเพียงปีศาจเท่านั้นที่กล้าแทงโลกเพื่อเอาหนามนิรันดร์ออกจากอกของมัน\n//If I look like a monster, it is because only a monster dares cut the world open to pull eternity's thorn from its heart.",
+        COLORS.white,
+      ],
+      [
+        "ลีร่า",
+        "Shards of Eternity... ไม่ใช่ตำนาน มันคือผนึกของโลก\n//The Shards of Eternity... they are not a legend. They are the world's seal.",
+        COLORS.purple,
+      ],
+      [
+        null,
+        "ภาพเวทมนตร์สุดท้ายของมาลาชาร์ยิ้มอย่างเหนื่อยล้า ก่อนร่างเงาจะหายไปทางประตูเหนือบัลลังก์\n>> ได้รับ: SHARD OF TRUTH\n//Malachar's last spell-image smiles with exhausted certainty before vanishing through the gate above the throne.\n//>> Received: SHARD OF TRUTH",
+        COLORS.blue,
+      ],
+    ],
+    next: "ch_sacrifice",
+  },
+
+  ch_sacrifice: {
+    t: "choice",
+    bg: "#08000c",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    text: "ประตูเหนือบัลลังก์เปิดออก เศษหินนิรันดร์ดูดกลืนชีวิตของผู้ลี้ภัยที่ซ่อนอยู่ในถ้ำ\nถ้าคุณหยุดพิธีตอนนี้ มาลาชาร์จะมีเวลาหนีเข้าแกนผนึก\nถ้าคุณไล่ตามเขาทันที ผู้บริสุทธิ์เหล่านั้นจะถูกเผาเป็นเชื้อไฟให้ Shard ชิ้นสุดท้าย\n\n//The gate above the throne opens. Shards of eternity begin feeding on refugees hidden in the cave.\n//If you stop the ritual now, Malachar will gain time to reach the Seal's Core.\n//If you chase him immediately, those innocents will burn as fuel for the final Shard.",
+    choices: [
+      {
+        text: "[A] ปกป้องผู้คนก่อน / Protect the people first.",
+        flag: "protectedAethoria",
+        reward: {
+          shards: ["sacrifice"],
+        },
+        next: "s_sacrifice_shard",
+      },
+      {
+        text: "[B] ไล่ตามมาลาชาร์ทันที / Pursue Malachar now.",
+        flag: "partyBroken",
+        next: "s_party_fracture",
+      },
+    ],
+  },
+
+  s_sacrifice_shard: {
+    t: "scene",
+    bg: "#100800",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    title: "── ชิ้นส่วนแห่งการเสียสละ / SHARD OF SACRIFICE ──",
+    lines: [
+      [
+        null,
+        "ทั้งสามคนหันหลังให้ทางหนีของมาลาชาร์ แล้ววางอาวุธลงเพื่อประคองเด็ก คนแก่ และทหารที่ยังหายใจอยู่\nชัยชนะถูกเลื่อนออกไป เพื่อให้ชีวิตยังมีโอกาสมาถึงวันพรุ่งนี้\n//The three turn away from Malachar's escape route and lower their weapons to carry children, elders, and soldiers who still breathe.\nVictory is delayed so life may still reach tomorrow.",
+        COLORS.white,
+      ],
+      [
+        null,
+        "เมื่อคนสุดท้ายพ้นวงเวท แสงสีแดงที่เคยกินชีวิตกลับหดตัวเป็น Shard สีเลือดอบอุ่น\n>> ได้รับ: SHARD OF SACRIFICE\n//When the last life leaves the circle, the red light that fed on them folds into a warm blood-colored Shard.\n//>> Received: SHARD OF SACRIFICE",
+        COLORS.red,
+      ],
+      [
+        "เพชรโตะ",
+        "ถ้านิรันดร์ต้องการให้เราทิ้งคนไว้ข้างหลัง... งั้นเราจะชนะมันด้วยการพาทุกคนไปด้วย\n//If eternity demands that we leave people behind... then we will defeat it by carrying everyone with us.",
+        COLORS.gold,
+      ],
+    ],
+    next: "s_final_act",
+  },
+
+  s_party_fracture: {
+    t: "scene",
+    bg: "#120000",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    title: "── รอยร้าวของปาร์ตี้ / PARTY FRACTURE ──",
+    lines: [
+      [
+        null,
+        "คุณพุ่งตามมาลาชาร์ไป เสียงร้องของผู้ลี้ภัยถูกทิ้งไว้ข้างหลัง\nริเวนหยุดวิ่งเป็นคนแรก ลีร่ากำมือจนเล็บจิกเลือด\n//You chase Malachar. The refugees' screams are left behind.\nRiven stops running first. Lyra clenches her fists until her nails draw blood.",
+        COLORS.gray,
+      ],
+      [
+        "ริเวน",
+        "ถ้าเราช่วยโลกด้วยการปล่อยให้คนตรงหน้าตาย เราต่างจากมาลาชาร์ตรงไหน?\n//If we save the world by letting the people before us die, how are we different from Malachar?",
+        COLORS.green,
+      ],
+      [
+        null,
+        "ปาร์ตี้ยังเดินต่อ แต่บางอย่างในใจพวกเขาไม่เคยกลับมาร่วมทางอีก\n//The party continues, but something in them never walks together again.",
+        COLORS.red,
+      ],
+    ],
+    next: "s_final_act",
+  },
+
+  s_final_act: {
+    t: "scene",
+    bg: "#000014",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    title: "── บทสุดท้าย: แกนผนึก / FINAL ACT: THE SEAL'S CORE ──",
+    reward: {
+      items: [
+        { id: "potion", name: "HEALTH POTION", d: "Restore 60 HP", c: 3 },
+        { id: "ether", name: "ETHER", d: "Restore 40 MP", c: 2 },
+        { id: "revive", name: "PHOENIX DOWN", d: "Revive at 50% HP", c: 1 },
+      ],
+    },
+    lines: [
+      [
+        null,
+        "แกนผนึกอยู่ใต้ถ้ำลึกกว่ารากของภูเขา ที่นั่นไม่มีท้องฟ้า ไม่มีเวลา มีเพียง Shards ที่หมุนรอบบัลลังก์ว่างเปล่า\n//The Seal's Core lies beneath the cave, deeper than the mountain's roots. There is no sky there, no time, only Shards circling an empty throne.",
+        COLORS.gray,
+      ],
+      [
+        "มาลาชาร์",
+        "ข้าทำลายอาณาจักรหนึ่ง เพื่อไม่ให้ทุกอาณาจักรถูกกลืน ข้าจองจำมังกรหนึ่ง เพื่อไม่ให้โลกทั้งใบเป็นกรง\n//I destroyed one kingdom so all kingdoms would not be swallowed. I caged one dragon so the whole world would not become a cage.",
+        COLORS.white,
+      ],
+      [
+        "เพชรโตะ",
+        "เจ้าเรียกมันว่าการช่วยโลก เพราะไม่เคยถามโลกเลยว่าอยากถูกช่วยแบบนั้นไหม\n//You call it saving the world because you never asked the world if it wanted to be saved that way.",
+        COLORS.gold,
+      ],
+      [
+        null,
+        "Lyra แบ่งอีเธอร์ขวดสุดท้าย Riven ผูกแผลให้ทุกคน และเพชรโตะนับลมหายใจก่อนเปิดศึกสุดท้าย\n>> ได้รับ: ยาฟื้นฟู 3, อีเธอร์ 2, ขนนกฟีนิกซ์ 1\n//Lyra splits the last ethers. Riven binds everyone's wounds. Phetto counts one breath before the final battle.\n//>> Received: 3 Potions, 2 Ethers, 1 Phoenix Down",
+        COLORS.green,
+      ],
+    ],
+    next: "b4",
+    battle: "b4",
   },
 
   end_peace: {
@@ -811,6 +1072,183 @@ const SCENES = {
       ],
     ],
   },
+
+  end_happy_1: {
+    t: "ending",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    titleColor: COLORS.gold,
+    title: "HAPPY ENDING 1: SHARDS OF ETERNITY",
+    lines: [
+      [
+        null,
+        "เมื่อมาลาชาร์ล้มลง Shards ทั้งห้าหมุนรอบเพชรโตะ ไม่ใช่เหมือนอาวุธ แต่เหมือนคำถามที่ได้รับคำตอบครบถ้วน\n//When Malachar falls, the five Shards circle Phetto, not like weapons, but like questions finally answered.",
+        COLORS.white,
+      ],
+      [
+        null,
+        "เมตตา กล้าหาญ ความทรงจำ ความจริง และการเสียสละ ประสานกันเป็นผนึกใหม่\nนิรันดร์ไม่ได้ถูกทำลาย มันถูกทำให้จำได้ว่าโลกนี้ยังมีชีวิต\n//Mercy, Courage, Memory, Truth, and Sacrifice join into a new seal.\nEternity is not destroyed. It is made to remember that this world is still alive.",
+        COLORS.gold,
+      ],
+      [
+        "VAELTHORN",
+        "เจ้าไม่ได้ชนะเพราะแข็งแกร่งกว่าเขา เจ้าเพียงไม่ยอมให้ความกลัวของเขากลายเป็นกฎของโลก\n//You did not win because you were stronger than him. You won because you refused to let his fear become the law of the world.",
+        "#ff8844",
+      ],
+      [
+        null,
+        "Aethoria เริ่มสร้างตัวเองใหม่ ไม่ใช่บนคำสาบานแห่งการแก้แค้น แต่บนชื่อของผู้ที่ยังถูกช่วยไว้ทัน\n//Aethoria begins again, not upon a vow of vengeance, but upon the names of those saved in time.",
+        COLORS.green,
+      ],
+      [
+        null,
+        "** ปลดล็อก HAPPY ENDING 1 — SHARDS OF ETERNITY **\n//** HAPPY ENDING 1 UNLOCKED — SHARDS OF ETERNITY **",
+        COLORS.gold,
+      ],
+    ],
+  },
+
+  end_bad_vaelthorn: {
+    t: "ending",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    titleColor: COLORS.red,
+    title: "BAD ENDING: THE DRAGON'S SILENCE",
+    lines: [
+      [
+        null,
+        "มาลาชาร์พ่ายแพ้ในการต่อสู้ แต่เมื่อแกนผนึกแตก ไม่มีเสียงใดตอบรับ Shard of Memory\nVaelthorn ตายไปแล้ว และความทรงจำที่โลกต้องใช้ก็เงียบไปตลอดกาล\n//Malachar loses the battle, but when the Seal's Core breaks, no voice answers the Shard of Memory.\nVaelthorn is dead, and the memory the world needed is silent forever.",
+        COLORS.red,
+      ],
+      [
+        null,
+        "โลกยังรอด... แต่ผนึกใหม่บิดเบี้ยว ความฝันของผู้คนเริ่มลืมชื่อคนที่พวกเขารัก\n//The world survives... but the new seal is warped. In dreams, people begin forgetting the names of those they love.",
+        COLORS.gray,
+      ],
+    ],
+  },
+
+  end_bad_fallen: {
+    t: "ending",
+    illustration: GAME_VISUALS.scenes.aethoriaRuins,
+    titleColor: COLORS.red,
+    title: "BAD ENDING: THE LAST SOLDIER FALLS",
+    lines: [
+      [
+        null,
+        "เพชรโตะล้มลงก่อนจะรวบรวม Shards ได้ครบ เสียงดาบของเขากระทบพื้นเบากว่าเสียงลมหายใจสุดท้ายของอาณาจักร\n//Phetto falls before the Shards can be gathered. His sword strikes the ground softer than the kingdom's final breath.",
+        COLORS.red,
+      ],
+      [
+        null,
+        "มาลาชาร์ไม่จำเป็นต้องชนะอีกต่อไป เขาเพียงเดินผ่านซากความหวัง และปล่อยให้นิรันดร์ทำส่วนที่เหลือ\n//Malachar no longer needs to win. He only walks through the remains of hope and lets eternity finish the rest.",
+        COLORS.gray,
+      ],
+    ],
+  },
+
+  end_bad_mercy: {
+    t: "ending",
+    illustration: GAME_VISUALS.scenes.aethoriaRuins,
+    titleColor: COLORS.red,
+    title: "BAD ENDING: A WORLD WITHOUT MERCY",
+    lines: [
+      [
+        null,
+        "คุณเอาชนะมาลาชาร์ได้ แต่ Shard of Mercy ไม่เคยตื่นขึ้น\nผนึกยอมรับพลังของคุณ แต่ปฏิเสธหัวใจของคุณ\n//You defeat Malachar, but the Shard of Mercy never wakes.\nThe seal accepts your strength, but rejects your heart.",
+        COLORS.red,
+      ],
+      [
+        null,
+        "Aethoria ถูกสร้างขึ้นใหม่อย่างแข็งแกร่ง เย็นชา และว่างเปล่า ผู้คนรอดชีวิต แต่ไม่มีใครเรียกมันว่าบ้าน\n//Aethoria is rebuilt strong, cold, and empty. People survive, but no one calls it home.",
+        COLORS.gray,
+      ],
+    ],
+  },
+
+  end_bad_party: {
+    t: "ending",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    titleColor: COLORS.red,
+    title: "BAD ENDING: THE BROKEN PARTY",
+    lines: [
+      [
+        null,
+        "มาลาชาร์ล้มลง แต่ปาร์ตี้ไม่ได้ยืนด้วยกันเมื่อแสงสุดท้ายมาถึง\nรอยร้าวที่เกิดจากการทิ้งผู้บริสุทธิ์ไว้ข้างหลังลึกกว่าดาบใด ๆ\n//Malachar falls, but the party does not stand together when the final light arrives.\nThe wound left by abandoning innocents is deeper than any blade.",
+        COLORS.red,
+      ],
+      [
+        null,
+        "ผนึกถูกสร้างขึ้นใหม่ด้วยมือที่ไม่เชื่อใจกัน และมันแตกอีกครั้งก่อนรุ่งสาง\n//The seal is remade by hands that no longer trust one another, and it cracks again before dawn.",
+        COLORS.gray,
+      ],
+    ],
+  },
+
+  end_bad_memory: {
+    t: "ending",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    titleColor: COLORS.red,
+    title: "BAD ENDING: NAMELESS TOMORROW",
+    lines: [
+      [
+        null,
+        "คุณมีพลังมากพอจะปิดประตูนิรันดร์ แต่ไม่มี Memory Shard ที่จะบอกโลกว่าควรจำสิ่งใดไว้\n//You have enough power to close eternity's gate, but no Memory Shard to tell the world what must be remembered.",
+        COLORS.red,
+      ],
+      [
+        null,
+        "ผู้คนตื่นขึ้นในเมืองที่ปลอดภัย และไม่รู้ว่าพวกเขาร้องไห้ให้ใคร\n//People wake in safe cities, not knowing whose names they are crying for.",
+        COLORS.gray,
+      ],
+    ],
+  },
+
+  end_bad_sacrifice: {
+    t: "ending",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    titleColor: COLORS.red,
+    title: "BAD ENDING: PRICE UNPAID",
+    lines: [
+      [
+        null,
+        "มาลาชาร์เข้าใจสิ่งหนึ่งถูกต้อง: ผนึกนิรันดร์ต้องการราคา\nแต่เมื่อถึงเวลาจ่าย คุณเลือกชัยชนะที่เร็วกว่า แทนชีวิตที่รอให้ช่วย\n//Malachar was right about one thing: eternity's seal demands a price.\nBut when the moment came, you chose the quicker victory over the lives waiting to be saved.",
+        COLORS.red,
+      ],
+      [
+        null,
+        "ประตูปิดลงด้วยเสียงของผู้บริสุทธิ์ และคืนนั้นไม่มีใครในปาร์ตี้หลับได้อีกเลย\n//The gate closes with the voices of innocents, and no one in the party sleeps again.",
+        COLORS.gray,
+      ],
+    ],
+  },
+
+  end_bad_shards: {
+    t: "ending",
+    illustration: GAME_VISUALS.scenes.vaelthornLair,
+    titleColor: COLORS.red,
+    title: "BAD ENDING: SHARDS UNMADE",
+    lines: [
+      [
+        null,
+        "Shards ที่ไม่ครบพยายามสร้างผนึกใหม่ แต่ช่องว่างระหว่างชิ้นส่วนกลายเป็นประตู\nสิ่งที่มาลาชาร์กลัวไม่ได้ตาย มันเพียงพบทางเข้าที่แคบกว่าเดิม\n//The incomplete Shards try to form a new seal, but the spaces between them become doors.\nThe thing Malachar feared does not die. It simply finds a narrower way in.",
+        COLORS.red,
+      ],
+      [
+        null,
+        "Aethoria เห็นรุ่งเช้าอีกครั้ง แต่เงาของมันยาวผิดธรรมชาติ และไม่มีใครกล้าถามว่ามันชี้ไปหาอะไร\n//Aethoria sees dawn again, but its shadow is unnaturally long, and no one dares ask what it points toward.",
+        COLORS.gray,
+      ],
+    ],
+  },
 };
 
-export { COLORS, GAME_VISUALS, createDefaultParty, createEnemiesFromKeys, BATTLES, SHOP_ITEMS, SCENES };
+export {
+  COLORS,
+  GAME_VISUALS,
+  SHARDS,
+  SHARDS_REQUIRED,
+  createDefaultParty,
+  createEnemiesFromKeys,
+  BATTLES,
+  SHOP_ITEMS,
+  SCENES,
+};

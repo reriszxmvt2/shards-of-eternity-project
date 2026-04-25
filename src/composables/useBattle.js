@@ -278,7 +278,9 @@ export const battleMethods = {
         ]);
         this.battlePhase = "victory";
         setTimeout(() => {
-          if (completedBattle.key === "b3") {
+          if (completedBattle.key === "b4") {
+            this.resolveFinalEnding();
+          } else if (completedBattle.key === "b3") {
             this.navigateToScene(
               this.storyFlags.saved ? "c_merchant_twist" : "ch_vaelthorn",
             );
@@ -349,10 +351,13 @@ export const battleMethods = {
       );
 
       if (enemy.boss && Math.random() < 0.35) {
-        const specialAttack = ["ไฟมังกร", "ฟาดหาง", "คำรามโบราณ"][
-          Math.floor(Math.random() * 3)
-        ];
-        if (specialAttack === "ไฟมังกร") {
+        const bossSpecialAttacks =
+          enemy.name === "MALACHAR"
+            ? ["เศษนิรันดร์", "ตราผนึก", "คำสาปราชสำนัก"]
+            : ["ไฟมังกร", "ฟาดหาง", "คำรามโบราณ"];
+        const specialAttack =
+          bossSpecialAttacks[Math.floor(Math.random() * bossSpecialAttacks.length)];
+        if (specialAttack === "ไฟมังกร" || specialAttack === "เศษนิรันดร์") {
           nextParty = nextParty.map((partyMember) => {
             if (!partyMember.alive) return partyMember;
             const damage = Math.max(
@@ -417,6 +422,7 @@ export const battleMethods = {
 
     if (!nextParty.some((partyMember) => partyMember.alive)) {
       this.battlePhase = "defeat";
+      setTimeout(() => this.navigateToScene("end_bad_fallen"), 1400);
       return;
     }
 
