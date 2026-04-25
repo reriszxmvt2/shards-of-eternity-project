@@ -1,8 +1,42 @@
 import { COLORS, SCENES, SHARDS_REQUIRED, createDefaultParty } from "../gameData";
 
+const ENDING_SCENES = {
+  happy: "end_happy_1",
+  missingMercy: "end_bad_mercy",
+  missingMemory: "end_bad_memory",
+  missingSacrifice: "end_bad_sacrifice",
+  missingShards: "end_bad_shards",
+  partyBroken: "end_bad_party",
+  vaelthornDead: "end_bad_vaelthorn",
+};
+
+const SCREENS_BY_SCENE_TYPE = {
+  choice: "choice",
+  ending: "ending",
+  scene: "scene",
+  shop: "shop",
+};
+
 const initialInventory = () => [
   { id: "potion", name: "HEALTH POTION", d: "Restore 60 HP", count: 2 },
 ];
+
+const hasShard = (shards, shardId) => shards.includes(shardId);
+
+const hasAllRequiredShards = (shards) =>
+  SHARDS_REQUIRED.every((shardId) => hasShard(shards, shardId));
+
+const getFinalEndingSceneId = ({ shards, storyFlags }) => {
+  if (!storyFlags.spared) return ENDING_SCENES.vaelthornDead;
+  if (!storyFlags.saved || !hasShard(shards, "mercy")) {
+    return ENDING_SCENES.missingMercy;
+  }
+  if (storyFlags.partyBroken) return ENDING_SCENES.partyBroken;
+  if (!hasShard(shards, "memory")) return ENDING_SCENES.missingMemory;
+  if (!hasShard(shards, "sacrifice")) return ENDING_SCENES.missingSacrifice;
+  if (!hasAllRequiredShards(shards)) return ENDING_SCENES.missingShards;
+  return ENDING_SCENES.happy;
+};
 
 export const createInitialGameState = () => ({
   screen: "title",
@@ -59,48 +93,45 @@ export const gameFlowMethods = {
     }
 
     if (reward.items) {
-      reward.items.forEach((rewardItem) => {
-        const existingItem = this.inventory.find(
-          (inventoryItem) => inventoryItem.id === rewardItem.id,
-        );
-        if (existingItem) {
-          existingItem.count += rewardItem.c;
-        } else {
-          this.inventory.push({
-            id: rewardItem.id,
-            name: rewardItem.name,
-            d: rewardItem.d,
-            count: rewardItem.c,
-          });
-        }
-      });
+      this.addItemsToInventory(reward.items);
     }
 
     if (reward.shards) {
-      const nextShards = new Set(this.shards);
-      reward.shards.forEach((shardId) => nextShards.add(shardId));
-      this.shards = [...nextShards];
+      this.addShards(reward.shards);
     }
+  },
+  addItemsToInventory(items) {
+    items.forEach((rewardItem) => {
+      const existingItem = this.inventory.find(
+        (inventoryItem) => inventoryItem.id === rewardItem.id,
+      );
+
+      if (existingItem) {
+        existingItem.count += rewardItem.c;
+        return;
+      }
+
+      this.inventory.push({
+        id: rewardItem.id,
+        name: rewardItem.name,
+        d: rewardItem.d,
+        count: rewardItem.c,
+      });
+    });
+  },
+  addShards(shardIds) {
+    this.shards = [...new Set([...this.shards, ...shardIds])];
   },
   hasAllRequiredShards() {
-    return SHARDS_REQUIRED.every((shardId) => this.shards.includes(shardId));
+    return hasAllRequiredShards(this.shards);
   },
   resolveFinalEnding() {
-    if (!this.storyFlags.spared) {
-      this.navigateToScene("end_bad_vaelthorn");
-    } else if (!this.storyFlags.saved || !this.shards.includes("mercy")) {
-      this.navigateToScene("end_bad_mercy");
-    } else if (this.storyFlags.partyBroken) {
-      this.navigateToScene("end_bad_party");
-    } else if (!this.shards.includes("memory")) {
-      this.navigateToScene("end_bad_memory");
-    } else if (!this.shards.includes("sacrifice")) {
-      this.navigateToScene("end_bad_sacrifice");
-    } else if (!this.hasAllRequiredShards()) {
-      this.navigateToScene("end_bad_shards");
-    } else {
-      this.navigateToScene("end_happy_1");
-    }
+    this.navigateToScene(
+      getFinalEndingSceneId({
+        shards: this.shards,
+        storyFlags: this.storyFlags,
+      }),
+    );
   },
   navigateToScene(targetSceneId) {
     const targetScene = SCENES[targetSceneId];
@@ -108,11 +139,7 @@ export const gameFlowMethods = {
 
     this.sceneId = targetSceneId;
     this.lineIndex = 0;
-
-    if (targetScene.t === "scene") this.screen = "scene";
-    else if (targetScene.t === "choice") this.screen = "choice";
-    else if (targetScene.t === "ending") this.screen = "ending";
-    else if (targetScene.t === "shop") this.screen = "shop";
+    this.screen = SCREENS_BY_SCENE_TYPE[targetScene.t] || this.screen;
   },
   advanceSceneLine() {
     if (this.lineIndex < this.sceneLines.length - 1) {
