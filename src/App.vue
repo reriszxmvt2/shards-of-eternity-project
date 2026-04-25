@@ -76,6 +76,11 @@
     <div class="soe__loading">Loading...</div>
   </div>
 
+  <ShardTracker
+    :catalog="SHARDS"
+    :shards="shards"
+    :visible="screen !== 'title'"
+  />
   <div class="soe__credit">Natthaphong P. Phattanakit (Phetto)</div>
 </template>
 
@@ -87,6 +92,7 @@ import EndingScreen from "./components/screens/EndingScreen.vue";
 import SceneScreen from "./components/screens/SceneScreen.vue";
 import ShopScreen from "./components/screens/ShopScreen.vue";
 import TitleScreen from "./components/screens/TitleScreen.vue";
+import ShardTracker from "./components/ui/ShardTracker.vue";
 import { battleComputed, battleMethods } from "./composables/useBattle";
 import {
   createInitialGameState,
@@ -94,7 +100,7 @@ import {
   gameFlowMethods,
 } from "./composables/useGameFlow";
 import { shopMethods } from "./composables/useShop";
-import { COLORS, GAME_VISUALS, SHOP_ITEMS } from "./gameData";
+import { COLORS, GAME_VISUALS, SHARDS, SHOP_ITEMS } from "./gameData";
 
 export default {
   name: "App",
@@ -103,6 +109,7 @@ export default {
     ChoiceScreen,
     EndingScreen,
     SceneScreen,
+    ShardTracker,
     ShopScreen,
     TitleScreen,
   },
@@ -110,6 +117,7 @@ export default {
     return {
       COLORS,
       GAME_VISUALS,
+      SHARDS,
       SHOP_ITEMS,
       ...createInitialGameState(),
     };

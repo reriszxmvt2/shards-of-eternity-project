@@ -774,3 +774,42 @@
   text-shadow: 0 1px 2px #000000;
   z-index: 20;
 }
+
+.soe__shard-tracker {
+  background: #050514ee;
+  border: 1px solid #4477ff66;
+  box-shadow: 0 0 10px #000000cc;
+  left: 10px;
+  padding: 6px 8px;
+  pointer-events: none;
+  position: fixed;
+  top: 10px;
+  z-index: 20;
+}
+
+.soe__shard-title {
+  color: #7788aa;
+  font-size: 9px;
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+
+.soe__shard-list {
+  display: flex;
+  gap: 4px;
+}
+
+.soe__shard-chip {
+  border: 1px solid #334466;
+  color: #334466;
+  font-size: 9px;
+  line-height: 1;
+  padding: 3px 4px;
+}
+
+.soe__shard-chip--active {
+  border-color: var(--soe-shard-color);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--soe-shard-color) 45%, transparent);
+  color: var(--soe-shard-color);
+  text-shadow: 0 0 6px color-mix(in srgb, var(--soe-shard-color) 60%, transparent);
+}
