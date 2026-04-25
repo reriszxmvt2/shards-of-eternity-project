@@ -1,85 +1,100 @@
-# ⚔️ Shards of Eternity — ชิ้นส่วนแห่งนิรันดร์
+# Shards of Eternity — ชิ้นส่วนแห่งนิรันดร์
 
-> A turn-based RPG browser game with a bilingual Thai/English story.
-> เกม RPG ผลัดเทิร์นในเบราว์เซอร์ เนื้อเรื่องสองภาษา ไทย/อังกฤษ
+> A turn-based RPG browser game with a bilingual Thai/English story.  
+> เกม RPG ผลัดเทิร์นบนเบราว์เซอร์ พร้อมเนื้อเรื่องสองภาษา ไทย/อังกฤษ
 
----
+## About
 
-## 🎮 เกี่ยวกับเกม / About
+อาณาจักร **Aethoria** ล่มสลายในคืนเดียวจากการทรยศของคนที่ไว้ใจที่สุด  
+คุณคือทหารคนเดียวที่รอดชีวิต และต้องออกเดินทางเพื่อแก้แค้น ค้นหาความจริง และตัดสินชะตาของผู้คนที่เหลืออยู่
 
-อาณาจักร **Aethoria** ล่มสลายในคืนเดียว เพราะคนที่ไว้วางใจมากที่สุด
-คุณคือทหารคนเดียวที่รอดชีวิต — ออกเดินทางแก้แค้นและค้นหาความจริง
+**The kingdom of Aethoria fell in a single night, betrayed from within.**  
+You are the sole surviving soldier. Set out to uncover the truth, face ancient darkness, and decide what vengeance should cost.
 
-**The kingdom of Aethoria fell in a single night — betrayed from within.**
-You are the sole surviving soldier. Set out to find the truth and confront the darkness.
+## Features
 
-- 3 ตัวละครเล่นได้ — นักรบ / นักเวทย์ / นักธนู
-- ระบบต่อสู้ผลัดเทิร์นพร้อม Skills, Items, Defend
-- เนื้อเรื่อง 3 บท พร้อมการตัดสินใจที่เปลี่ยนตอนจบ
-- **2 ตอนจบ** — True Ending และ Avenger Ending
+- Turn-based RPG battle system
+- Playable party members: warrior, mage, and archer
+- Skills, items, defend actions, poison, stun, buffs, and boss battle mechanics
+- Thai/English story scenes
+- Branching choices with multiple endings
+- Shop system for items and weapon upgrades
 
----
+## Tech Stack
 
-## 🚀 วิธีรันบนเครื่อง / Run Locally
+| Technology | Purpose |
+| --- | --- |
+| Vue 3 | UI and game screen rendering |
+| JavaScript ES6 | Game logic and modules |
+| Vite | Dev server and production build |
+| CSS BEM | Maintainable game styling |
 
-**ต้องการ:** [Node.js](https://nodejs.org) v18 ขึ้นไป
+## Run Locally
+
+Requires Node.js 18 or newer.
 
 ```bash
-# 1. Clone โปรเจกต์
 git clone https://github.com/reriszxmvt2/shards-of-eternity-project.git
 cd shards-of-eternity-project
-
-# 2. ติดตั้ง dependencies
 npm install
+npm run start
+```
 
-# 3. รัน dev server
+Open the game at:
+
+```text
+http://localhost:5173/
+```
+
+You can also use:
+
+```bash
 npm run dev
 ```
 
-จากนั้นเปิดเบราว์เซอร์ไปที่ `http://localhost:5173`
+## Available Scripts
 
----
+```bash
+npm run start    # Start Vite dev server
+npm run dev      # Start Vite dev server
+npm run build    # Build production files into dist/
+npm run preview  # Preview the production build locally
+```
 
-## 🏗️ Build สำหรับ Production
+## Project Structure
+
+```text
+shards-of-eternity-project/
+├── src/
+│   ├── App.vue                    # App coordinator and screen state
+│   ├── main.js                    # Vue entry point
+│   ├── gameData.js                # Story, party, enemies, shop data
+│   ├── components/
+│   │   ├── battle/                # Battle UI pieces
+│   │   ├── screens/               # Main game screens
+│   │   └── ui/                    # Shared UI controls
+│   └── composables/               # Game flow, battle, and shop logic
+├── shards_of_eternity.css         # BEM-based game styles
+├── index.html
+├── package.json
+└── vite.config.js
+```
+
+## Build
 
 ```bash
 npm run build
 ```
 
-ไฟล์ที่ได้จะอยู่ในโฟลเดอร์ `dist/` พร้อม deploy ได้เลย
+The production files will be generated in `dist/`.
 
----
+## Notes
 
-## 🛠️ Tech Stack
+The current codebase is organized around small Vue components and composables:
 
-| เทคโนโลยี | รายละเอียด |
-|-----------|-----------|
-| React 18 | UI & Game State |
-| TypeScript | Type Safety |
-| Vite | Build Tool & Dev Server |
+- `components/screens` handles each game screen.
+- `components/battle` handles battle-specific UI.
+- `components/ui` holds shared controls.
+- `composables` holds game behavior and state transitions.
 
----
-
-## 📁 โครงสร้างโปรเจกต์
-
-```
-shards-of-eternity-project/
-├── shards_of_eternity.tsx   # ตัวเกมทั้งหมด
-├── src/
-│   └── main.tsx             # Entry point
-├── index.html
-├── vite.config.ts
-└── tsconfig.json
-```
-
----
-
-## 📸 Screenshots
-
-| หน้า Title | ฉากเนื้อเรื่อง | ระบบต่อสู้ |
-|-----------|-------------|----------|
-| หน้าจอเริ่มเกม | บทสนทนาสองภาษา | Turn-based battle |
-
----
-
-*Made with React + TypeScript · ทำด้วย React + TypeScript*
+Made with Vue 3 + JavaScript ES6.
