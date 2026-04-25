@@ -372,8 +372,9 @@
 </template>
 
 <script>
-import { h } from "vue";
 import "../shards_of_eternity.css";
+import ActionButton from "./components/ui/ActionButton.vue";
+import StatusBar from "./components/ui/StatusBar.vue";
 import {
   BATTLES,
   COLORS,
@@ -382,61 +383,6 @@ import {
   createDefaultParty,
   createEnemiesFromKeys,
 } from "./gameData";
-
-const StatusBar = {
-  name: "StatusBar",
-  props: {
-    v: { type: Number, required: true },
-    max: { type: Number, required: true },
-    color: { type: String, required: true },
-    w: { type: Number, default: 80 },
-  },
-  computed: {
-    percent() {
-      return Math.max(0, Math.min(100, (this.v / this.max) * 100));
-    },
-  },
-  render() {
-    return h(
-      "div",
-      {
-        class: "soe__status-bar",
-        style: { "--soe-status-width": `${this.w}px` },
-      },
-      [
-        h("div", {
-          class: "soe__status-fill",
-          style: {
-            "--soe-status-fill": this.color,
-            "--soe-status-percent": `${this.percent}%`,
-          },
-        }),
-      ],
-    );
-  },
-};
-
-const ActionButton = {
-  name: "ActionButton",
-  props: {
-    color: { type: String, default: COLORS.border },
-    disabled: { type: Boolean, default: false },
-    small: { type: Boolean, default: false },
-  },
-  emits: ["click"],
-  render() {
-    return h(
-      "button",
-      {
-        class: ["soe__button", this.small && "soe__button--small"],
-        disabled: this.disabled,
-        style: { "--soe-button-border": this.color },
-        onClick: () => this.$emit("click"),
-      },
-      this.$slots.default?.(),
-    );
-  },
-};
 
 export default {
   name: "App",
