@@ -21,6 +21,7 @@ const GAME_VISUALS = pixelArt;
 
 const SCREEN_IDS = {
   battle: "battle",
+  chapter: "chapter",
   choice: "choice",
   ending: "ending",
   scene: "scene",
@@ -402,6 +403,20 @@ const SCENES = {
     t: "scene",
     bg: "#050014",
     illustration: GAME_VISUALS.scenes.brokenSeal,
+    chapter: {
+      kicker: "AN 8-BIT LEGEND BEGINS",
+      title: "PROLOGUE",
+      subtitle: "THE ETERNAL SEAL",
+    },
+    location: {
+      name: "ผนึกที่แตกสลาย / THE BROKEN SEAL",
+      region: "Before Aethoria",
+    },
+    objective: {
+      id: "prologue",
+      title: "ฟังตำนานผนึก / Hear the legend",
+      desc: "เรียนรู้ต้นกำเนิดของ Shards of Eternity",
+    },
     title: "── ปฐมบท: ผนึกแห่งนิรันดร์ / PROLOGUE: THE ETERNAL SEAL ──",
     lines: [
       [
@@ -452,6 +467,23 @@ const SCENES = {
     t: "scene",
     bg: "#180008",
     illustration: GAME_VISUALS.scenes.aethoriaRuins,
+    chapter: {
+      kicker: "ACT I",
+      title: "THE FALL",
+      subtitle: "AETHORIA, YEAR 847",
+    },
+    location: {
+      name: "ซากอาณาจักรเอเธอเรีย / AETHORIA RUINS",
+      region: "The Fallen Capital",
+    },
+    objective: {
+      id: "survive_ruins",
+      title: "เอาชีวิตรอดจากซากเมือง / Survive the ruins",
+      desc: "ฝ่าคืนแห่งการทรยศและตามรอยมาลาชาร์",
+    },
+    questUpdate: {
+      completeCurrent: true,
+    },
     title: "── บทที่ 1: การล่มสลาย / ACT I: THE FALL ──",
     lines: [
       [null, "AETHORIA ปีที่ 847\n//AETHORIA, YEAR 847", COLORS.gray],
@@ -488,6 +520,10 @@ const SCENES = {
     t: "scene",
     bg: "#1a0800",
     illustration: GAME_VISUALS.scenes.aethoriaRuins,
+    savePoint: {
+      label: "ประกายผนึกที่ยังไม่ดับ / Lingering Seal Spark",
+      note: "พักหายใจก่อนศึกแรก",
+    },
     lines: [
       [
         "เพชรโตะ",
@@ -542,6 +578,14 @@ const SCENES = {
     t: "choice",
     bg: "#0a1400",
     illustration: GAME_VISUALS.scenes.aethoriaRuins,
+    objective: {
+      id: "merchant_choice",
+      title: "เสียงร้องในซากเมือง / A cry in the ruins",
+      desc: "ตัดสินใจว่าจะช่วยชายที่ถูกล้อมไว้หรือเดินหน้าต่อ",
+    },
+    questUpdate: {
+      completeCurrent: true,
+    },
     text: 'กลางถนนที่ยังมีไฟลามเลีย\nพ่อค้าวัยกลางคนหมอบอยู่ตรงมุมตึก\nก็อบลินสองตัวล้อมเขาไว้ มีดในมือสั่นไม่หยุด\n\nเขาตะโกนทันทีที่เห็นคุณ\n"ช่วยข้าด้วย!"\n\n// Amid burning ruins, a middle-aged merchant cowers in a corner.\n// Two goblins close in. The knife in his hand trembles.\n// He cries out the moment he sees you:\n// "Please — help me!"',
     choices: [
       {
@@ -626,6 +670,23 @@ const SCENES = {
     t: "scene",
     bg: "#0a0a1a",
     illustration: GAME_VISUALS.scenes.ashwoodForest,
+    chapter: {
+      kicker: "NEW ALLIES",
+      title: "ASHWOOD FOREST",
+      subtitle: "Tracks beneath old trees",
+    },
+    location: {
+      name: "ป่าแอชวูด / ASHWOOD FOREST",
+      region: "Northern Road",
+    },
+    objective: {
+      id: "gather_allies",
+      title: "รวบรวมผู้ร่วมทาง / Gather allies",
+      desc: "ตามหาคนที่รู้ความจริงของมาลาชาร์และ Vaelthorn",
+    },
+    questUpdate: {
+      completeCurrent: true,
+    },
     title: "── ป่าแอชวูด / ASHWOOD FOREST ──",
     lines: [
       [
@@ -706,6 +767,27 @@ const SCENES = {
     t: "scene",
     bg: "#1a0a00",
     illustration: GAME_VISUALS.scenes.mountainPass,
+    chapter: {
+      kicker: "ACT II",
+      title: "THE MOUNTAIN PASS",
+      subtitle: "The road narrows",
+    },
+    location: {
+      name: "ช่องเขาเก่า / THE MOUNTAIN PASS",
+      region: "Road to Vaelthorn's Lair",
+    },
+    objective: {
+      id: "cross_pass",
+      title: "ข้ามช่องเขา / Cross the pass",
+      desc: "ฝ่าด่านหินดำและเปิดทางสู่ถ้ำ Vaelthorn",
+    },
+    questUpdate: {
+      completeCurrent: true,
+    },
+    savePoint: {
+      label: "คบไฟริมช่องเขา / Pass Torch",
+      note: "บันทึกก่อนปะทะกองหน้า",
+    },
     title: "── บทที่ 2: ช่องเขา / ACT II: THE MOUNTAIN PASS ──",
     reward: {
       shards: ["courage"],
@@ -737,6 +819,27 @@ const SCENES = {
     t: "scene",
     bg: "#1a0000",
     illustration: GAME_VISUALS.scenes.vaelthornLair,
+    chapter: {
+      kicker: "ACT III",
+      title: "VAELTHORN'S LAIR",
+      subtitle: "A prison under flame",
+    },
+    location: {
+      name: "ถ้ำวาเอลธอร์น / VAELTHORN'S LAIR",
+      region: "Dragon's Hollow",
+    },
+    objective: {
+      id: "break_sigil",
+      title: "ทำลายตราผนึก / Break the sigil",
+      desc: "ทำให้ Vaelthorn อ่อนแรงและเปิดเผยความจริงของตรามืด",
+    },
+    questUpdate: {
+      completeCurrent: true,
+    },
+    savePoint: {
+      label: "ผนึกหน้าถ้ำ / Lair Seal",
+      note: "บันทึกก่อนเผชิญหน้า Vaelthorn",
+    },
     title: "── บทที่ 3: ถ้ำวาเอลธอร์น / ACT III: VAELTHORN'S LAIR ──",
     lines: [
       [
@@ -1021,6 +1124,27 @@ const SCENES = {
     t: "scene",
     bg: "#000014",
     illustration: GAME_VISUALS.scenes.sealCore,
+    chapter: {
+      kicker: "FINAL ACT",
+      title: "THE SEAL'S CORE",
+      subtitle: "Where every choice returns",
+    },
+    location: {
+      name: "แกนผนึก / THE SEAL'S CORE",
+      region: "Below the Mountain",
+    },
+    objective: {
+      id: "final_battle",
+      title: "หยุดมาลาชาร์ / Stop Malachar",
+      desc: "นำ Shards ที่รวบรวมมาเข้าสู่ศึกตัดสินชะตา",
+    },
+    questUpdate: {
+      completeCurrent: true,
+    },
+    savePoint: {
+      label: "คริสตัลแกนผนึก / Core Crystal",
+      note: "บันทึกก่อนศึกสุดท้าย",
+    },
     title: "── บทสุดท้าย: แกนผนึก / FINAL ACT: THE SEAL'S CORE ──",
     reward: {
       items: [
