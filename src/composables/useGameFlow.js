@@ -40,7 +40,7 @@ const getFinalEndingSceneId = ({ shards, storyFlags }) => {
 
 export const createInitialGameState = () => ({
   screen: "title",
-  sceneId: "s_intro",
+  sceneId: "s_prologue",
   lineIndex: 0,
   party: [createDefaultParty()[0]],
   gold: 50,

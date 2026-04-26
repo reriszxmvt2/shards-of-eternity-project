@@ -376,6 +376,56 @@ const SHOP_ITEMS = [
 
 // Lines: [speaker, "thai\n//english", color]
 const SCENES = {
+  s_prologue: {
+    t: "scene",
+    bg: "#050014",
+    illustration: GAME_VISUALS.scenes.brokenSeal,
+    title: "── ปฐมบท: ผนึกแห่งนิรันดร์ / PROLOGUE: THE ETERNAL SEAL ──",
+    lines: [
+      [
+        null,
+        "ก่อนที่ชื่อของ Aethoria จะถูกจารึกไว้ในตำนาน\nโลกใบนี้เคยเกือบถูกกลืนหายไปในสิ่งที่ไม่มีใครกล้าเรียกชื่อ\n//Before Aethoria's name was written into legend,\nthis world was nearly swallowed by something no one dared to name.",
+        COLORS.gray,
+      ],
+      [
+        null,
+        "เหล่านักปราชญ์จึงสร้างผนึกโบราณขึ้นมา\nและเมื่อผนึกนั้นแตกออก พลังของมันกลายเป็น Shards of Eternity ทั้งห้า\n//The sages forged an ancient seal to hold it back.\nWhen that seal fractured, its power became the five Shards of Eternity.",
+        COLORS.white,
+      ],
+      [
+        null,
+        "เมตตา ความกล้าหาญ ความทรงจำ ความจริง และการเสียสละ\nห้าชิ้นส่วนนี้ไม่ได้เลือกคนที่แข็งแกร่งที่สุด\nแต่มันตอบรับคนที่ยังไม่ทิ้งหัวใจของตัวเอง\n//Mercy, Courage, Memory, Truth, and Sacrifice.\nThese five fragments do not choose the strongest.\nThey answer those who have not abandoned their own hearts.",
+        COLORS.gold,
+      ],
+      [
+        null,
+        "Aethoria เติบโตขึ้นใต้แสงของผนึกนั้น\nอาณาจักรที่ผู้คนเชื่อในคำสาบาน เชื่อในดาบของผู้ปกป้อง\nและเชื่อว่าตราบใดที่ประตูเมืองยังปิด ความสงบก็จะไม่จากไป\n//Aethoria grew beneath that seal's light.\nIt was a kingdom that believed in vows, in the blades of its guardians,\nand in the peace kept safe behind closed gates.",
+        COLORS.white,
+      ],
+      [
+        null,
+        "แต่บางครั้ง โลกไม่ได้พังเพราะปีศาจ\nมันพังเพราะคนที่เชื่อว่าตัวเองกำลังช่วยมัน\n//But sometimes, the world does not break because of demons.\nIt breaks because of those who believe they are saving it.",
+        COLORS.red,
+      ],
+      [
+        null,
+        "ลอร์ดมาลาชาร์เคยเป็นมันสมองของราชสำนัก\nคนที่กษัตริย์ไว้ใจ คนที่มองเห็นภัยร้ายก่อนใคร\nแต่ยิ่งเขามองเห็นความมืดชัดเท่าไร เขาก็ยิ่งเชื่อว่าชีวิตบางชีวิตต้องถูกสละเพื่อให้โลกเดินต่อ\n//Lord Malachar was once the mind behind the throne.\nTrusted by the King, he saw danger before anyone else.\nBut the clearer he saw the darkness, the more he believed some lives had to be sacrificed so the world could continue.",
+        COLORS.gray,
+      ],
+      [
+        null,
+        "ในช่วงหลายคืนก่อนการล่มสลาย เงาของเมืองยาวผิดธรรมชาติ\nผู้คนลืมชื่อคนที่รักไปชั่วขณะ และข่าวลือเรื่องมังกร Vaelthorn ก็เริ่มดังขึ้นเหมือนลางร้าย\n//In the nights before the fall, the city's shadows stretched too far.\nPeople forgot the names of loved ones for a heartbeat,\nand rumors of the dragon Vaelthorn rose like an omen.",
+        COLORS.purple,
+      ],
+      [
+        null,
+        "แล้วปีที่ 847 ก็มาถึง\nคืนนั้น Aethoria ไม่ได้แพ้เพราะกำแพงอ่อนแอ\nแต่แพ้เพราะประตูถูกเปิดจากข้างใน\n//Then came the year 847.\nThat night, Aethoria did not fall because its walls were weak.\nIt fell because the gates were opened from within.",
+        COLORS.red,
+      ],
+    ],
+    next: "s_intro",
+  },
+
   s_intro: {
     t: "scene",
     bg: "#180008",
