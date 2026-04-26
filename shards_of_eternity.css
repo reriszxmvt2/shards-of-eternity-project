@@ -87,9 +87,10 @@
 }
 
 .soe__button:hover:not(:disabled) {
-  background: #1a1a3a;
+  background: #ffcc00;
   border-color: var(--soe-gold);
-  color: var(--soe-gold);
+  box-shadow: 0 0 14px #ffcc0044;
+  color: var(--soe-dark);
 }
 
 .soe__button:disabled {
@@ -773,6 +774,30 @@
   text-align: right;
   text-shadow: 0 1px 2px #000000;
   z-index: 20;
+}
+
+.soe__exit-button {
+  background: #050514ee;
+  border: 1px solid #ff3344aa;
+  box-shadow: 0 0 10px #000000cc;
+  color: #ff99a0;
+  cursor: pointer;
+  font-family: "Consolas", "Monaco", "Menlo", "Lucida Console", monospace;
+  font-size: 10px;
+  letter-spacing: 0;
+  line-height: 1.4;
+  padding: 6px 10px;
+  position: fixed;
+  right: 10px;
+  top: 10px;
+  z-index: 25;
+}
+
+.soe__exit-button:hover {
+  background: #ff3344;
+  border-color: #ffccd0;
+  box-shadow: 0 0 14px #ff334477;
+  color: var(--soe-white);
 }
 
 .soe__shard-tracker {

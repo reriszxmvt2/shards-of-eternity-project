@@ -81,6 +81,14 @@
     :shards="shards"
     :visible="screen !== 'title'"
   />
+  <button
+    v-if="canShowExitButton"
+    class="soe__exit-button"
+    type="button"
+    @click="resetGame"
+  >
+    ออก / EXIT
+  </button>
   <div class="soe__credit">Natthaphong P. Phattanakit (Phetto)</div>
 </template>
 
@@ -125,6 +133,9 @@ export default {
   computed: {
     ...gameFlowComputed,
     ...battleComputed,
+    canShowExitButton() {
+      return ["scene", "choice", "shop", "battle"].includes(this.screen);
+    },
   },
   methods: {
     ...gameFlowMethods,
