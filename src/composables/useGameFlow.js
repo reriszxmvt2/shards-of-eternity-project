@@ -1,4 +1,11 @@
-import { COLORS, SCENES, SHARDS_REQUIRED, createDefaultParty } from "../gameData";
+import {
+  COLORS,
+  SCENES,
+  SCENE_IDS,
+  SCREEN_IDS,
+  SHARDS_REQUIRED,
+  createDefaultParty,
+} from "../gameData";
 
 const ENDING_SCENES = {
   happy: "end_happy_1",
@@ -11,15 +18,19 @@ const ENDING_SCENES = {
 };
 
 const SCREENS_BY_SCENE_TYPE = {
-  choice: "choice",
-  ending: "ending",
-  scene: "scene",
-  shop: "shop",
+  choice: SCREEN_IDS.choice,
+  ending: SCREEN_IDS.ending,
+  scene: SCREEN_IDS.scene,
+  shop: SCREEN_IDS.shop,
 };
 
-const initialInventory = () => [
+const STORY_TEXT_SEPARATOR = "\n//";
+
+const createInitialInventory = () => [
   { id: "potion", name: "ยาฟื้นฟู / HEALTH POTION", d: "ฟื้น HP 60", count: 2 },
 ];
+
+const createInitialParty = () => [createDefaultParty()[0]];
 
 const hasShard = (shards, shardId) => shards.includes(shardId);
 
@@ -39,12 +50,12 @@ const getFinalEndingSceneId = ({ shards, storyFlags }) => {
 };
 
 export const createInitialGameState = () => ({
-  screen: "title",
-  sceneId: "s_prologue",
+  screen: SCREEN_IDS.title,
+  sceneId: SCENE_IDS.prologue,
   lineIndex: 0,
-  party: [createDefaultParty()[0]],
+  party: createInitialParty(),
   gold: 50,
-  inventory: initialInventory(),
+  inventory: createInitialInventory(),
   shards: [],
   storyFlags: {},
   battle: null,
@@ -82,8 +93,17 @@ export const gameFlowComputed = {
 
 export const gameFlowMethods = {
   splitText(text) {
-    const [thai, english] = String(text).split("\n//");
+    const [thai, english] = String(text).split(STORY_TEXT_SEPARATOR);
     return { thai, english };
+  },
+  startGame() {
+    this.screen = SCREEN_IDS.scene;
+  },
+  continueFromShop() {
+    this.navigateToScene(SCENE_IDS.act3);
+  },
+  hasMoreSceneLines() {
+    return this.lineIndex < this.sceneLines.length - 1;
   },
   applyReward(reward) {
     if (!reward) return;
@@ -142,11 +162,14 @@ export const gameFlowMethods = {
     this.screen = SCREENS_BY_SCENE_TYPE[targetScene.t] || this.screen;
   },
   advanceSceneLine() {
-    if (this.lineIndex < this.sceneLines.length - 1) {
+    if (this.hasMoreSceneLines()) {
       this.lineIndex += 1;
       return;
     }
 
+    this.completeCurrentScene();
+  },
+  completeCurrentScene() {
     if (this.scene.reward) {
       this.applyReward(this.scene.reward);
     }
@@ -163,8 +186,6 @@ export const gameFlowMethods = {
 
     if (this.scene.battle) {
       this.initializeBattle(this.scene.battle);
-    } else if (this.scene.next === "c_shop" || SCENES[this.scene.next]?.t === "shop") {
-      this.screen = "shop";
     } else if (this.scene.next) {
       this.navigateToScene(this.scene.next);
     }

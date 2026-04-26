@@ -1,13 +1,13 @@
 <template>
   <TitleScreen
-    v-if="screen === 'title'"
+    v-if="screen === SCREEN_IDS.title"
     :colors="COLORS"
     :visuals="GAME_VISUALS"
-    @start="screen = 'scene'"
+    @start="startGame"
   />
 
   <SceneScreen
-    v-else-if="screen === 'scene'"
+    v-else-if="screen === SCREEN_IDS.scene"
     :colors="COLORS"
     :current-line="currentLine"
     :line-index="lineIndex"
@@ -18,7 +18,7 @@
   />
 
   <ChoiceScreen
-    v-else-if="screen === 'choice'"
+    v-else-if="screen === SCREEN_IDS.choice"
     :choice-text="choiceText"
     :colors="COLORS"
     :scene="scene"
@@ -26,7 +26,7 @@
   />
 
   <ShopScreen
-    v-else-if="screen === 'shop'"
+    v-else-if="screen === SCREEN_IDS.shop"
     :colors="COLORS"
     :gold="gold"
     :inventory="inventory"
@@ -35,11 +35,11 @@
     :shop-items="SHOP_ITEMS"
     :shop-msg="shopMsg"
     @buy="handleBuyItem"
-    @continue="navigateToScene('s_act3')"
+    @continue="continueFromShop"
   />
 
   <BattleScreen
-    v-else-if="screen === 'battle'"
+    v-else-if="screen === SCREEN_IDS.battle"
     :acted-party-indexes="actedPartyIndexes"
     :available-inventory="availableInventory"
     :battle="battle"
@@ -54,7 +54,7 @@
     :party="party"
     :selected-party-index="selectedPartyIndex"
     @cancel-targeting="cancelTargeting"
-    @defend="handlePartyAction(selectedPartyIndex, 'defend', null, null)"
+    @defend="handleDefendAction"
     @reset="resetGame"
     @select-ally-target="selectAllyTarget"
     @select-enemy-target="selectEnemyTarget"
@@ -65,7 +65,7 @@
   />
 
   <EndingScreen
-    v-else-if="screen === 'ending'"
+    v-else-if="screen === SCREEN_IDS.ending"
     :colors="COLORS"
     :scene="scene"
     :story-flags="storyFlags"
@@ -79,7 +79,7 @@
   <ShardTracker
     :catalog="SHARDS"
     :shards="shards"
-    :visible="screen !== 'title'"
+    :visible="screen !== SCREEN_IDS.title"
   />
   <button
     v-if="canShowExitButton"
@@ -108,7 +108,7 @@ import {
   gameFlowMethods,
 } from "./composables/useGameFlow";
 import { shopMethods } from "./composables/useShop";
-import { COLORS, GAME_VISUALS, SHARDS, SHOP_ITEMS } from "./gameData";
+import { COLORS, GAME_VISUALS, SCREEN_IDS, SHARDS, SHOP_ITEMS } from "./gameData";
 
 export default {
   name: "App",
@@ -127,6 +127,7 @@ export default {
       GAME_VISUALS,
       SHARDS,
       SHOP_ITEMS,
+      SCREEN_IDS,
       ...createInitialGameState(),
     };
   },
@@ -134,13 +135,21 @@ export default {
     ...gameFlowComputed,
     ...battleComputed,
     canShowExitButton() {
-      return ["scene", "choice", "shop", "battle"].includes(this.screen);
+      return [
+        SCREEN_IDS.scene,
+        SCREEN_IDS.choice,
+        SCREEN_IDS.shop,
+        SCREEN_IDS.battle,
+      ].includes(this.screen);
     },
   },
   methods: {
     ...gameFlowMethods,
     ...battleMethods,
     ...shopMethods,
+    handleDefendAction() {
+      this.handlePartyAction(this.selectedPartyIndex, "defend", null, null);
+    },
   },
 };
 </script>

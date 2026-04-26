@@ -1,9 +1,10 @@
-import { BATTLES, createEnemiesFromKeys } from "../gameData";
-
-const BATTLE_KEYS = {
-  finalBoss: "b4",
-  vaelthorn: "b3",
-};
+import {
+  BATTLES,
+  BATTLE_IDS,
+  SCENE_IDS,
+  SCREEN_IDS,
+  createEnemiesFromKeys,
+} from "../gameData";
 
 const BATTLE_MENUS = {
   main: "main",
@@ -73,7 +74,7 @@ export const battleMethods = {
     this.selectedPartyIndex = 0;
     this.battleMenu = BATTLE_MENUS.main;
     this.pendingBattleAction = null;
-    this.screen = "battle";
+    this.screen = SCREEN_IDS.battle;
   },
   calculateDamage(attackPower, attackBuff, skillMultiplier, defense) {
     return Math.max(
@@ -332,13 +333,17 @@ export const battleMethods = {
     }
   },
   navigateAfterVictory(completedBattle) {
-    if (completedBattle.key === BATTLE_KEYS.finalBoss) {
+    if (completedBattle.key === BATTLE_IDS.finalBoss) {
       this.resolveFinalEnding();
       return;
     }
 
-    if (completedBattle.key === BATTLE_KEYS.vaelthorn) {
-      this.navigateToScene(this.storyFlags.saved ? "c_merchant_twist" : "ch_vaelthorn");
+    if (completedBattle.key === BATTLE_IDS.vaelthorn) {
+      this.navigateToScene(
+        this.storyFlags.saved
+          ? SCENE_IDS.merchantTwist
+          : SCENE_IDS.vaelthornChoice,
+      );
       return;
     }
 
@@ -452,7 +457,7 @@ export const battleMethods = {
 
     if (!nextParty.some((partyMember) => partyMember.alive)) {
       this.battlePhase = BATTLE_PHASES.defeat;
-      setTimeout(() => this.navigateToScene("end_bad_fallen"), 1400);
+      setTimeout(() => this.navigateToScene(SCENE_IDS.fallenEnding), 1400);
       return;
     }
 

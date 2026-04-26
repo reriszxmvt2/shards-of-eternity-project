@@ -19,6 +19,28 @@ const COLORS = {
 
 const GAME_VISUALS = pixelArt;
 
+const SCREEN_IDS = {
+  battle: "battle",
+  choice: "choice",
+  ending: "ending",
+  scene: "scene",
+  shop: "shop",
+  title: "title",
+};
+
+const SCENE_IDS = {
+  prologue: "s_prologue",
+  act3: "s_act3",
+  merchantTwist: "c_merchant_twist",
+  vaelthornChoice: "ch_vaelthorn",
+  fallenEnding: "end_bad_fallen",
+};
+
+const BATTLE_IDS = {
+  vaelthorn: "b3",
+  finalBoss: "b4",
+};
+
 const SHARDS = [
   {
     id: "mercy",
@@ -1293,8 +1315,11 @@ const SCENES = {
 };
 
 export {
+  BATTLE_IDS,
   COLORS,
   GAME_VISUALS,
+  SCENE_IDS,
+  SCREEN_IDS,
   SHARDS,
   SHARDS_REQUIRED,
   createDefaultParty,
