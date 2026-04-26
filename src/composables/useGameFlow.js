@@ -25,12 +25,43 @@ const SCREENS_BY_SCENE_TYPE = {
 };
 
 const STORY_TEXT_SEPARATOR = "\n//";
+const SAVE_KEY = "shards-of-eternity-save-v1";
+const SAVE_VERSION = 1;
 
 const createInitialInventory = () => [
   { id: "potion", name: "ยาฟื้นฟู / HEALTH POTION", d: "ฟื้น HP 60", count: 2 },
 ];
 
 const createInitialParty = () => [createDefaultParty()[0]];
+
+const createInitialQuestLog = () => ({
+  current: null,
+  completed: [],
+});
+
+const readSaveSlot = () => {
+  if (typeof window === "undefined") return null;
+
+  try {
+    const rawSave = window.localStorage.getItem(SAVE_KEY);
+    if (!rawSave) return null;
+
+    const saveSlot = JSON.parse(rawSave);
+    return saveSlot.version === SAVE_VERSION ? saveSlot : null;
+  } catch {
+    return null;
+  }
+};
+
+const writeSaveSlot = (saveSlot) => {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(SAVE_KEY, JSON.stringify(saveSlot));
+};
+
+const clearSaveSlot = () => {
+  if (typeof window === "undefined") return;
+  window.localStorage.removeItem(SAVE_KEY);
+};
 
 const hasShard = (shards, shardId) => shards.includes(shardId);
 
@@ -67,6 +98,11 @@ export const createInitialGameState = () => ({
   pendingBattleAction: null,
   shopMsg: "",
   purchasedUpgrades: [],
+  questLog: createInitialQuestLog(),
+  isQuestLogOpen: false,
+  saveMsg: "",
+  saveSlot: readSaveSlot(),
+  shownChapterSceneIds: [],
 });
 
 export const gameFlowComputed = {
@@ -89,6 +125,18 @@ export const gameFlowComputed = {
   choiceText() {
     return this.splitText(this.scene.text || "");
   },
+  currentSavePoint() {
+    return this.screen === SCREEN_IDS.scene ? this.scene.savePoint || null : null;
+  },
+  canShowQuestButton() {
+    return ![SCREEN_IDS.title, SCREEN_IDS.chapter].includes(this.screen);
+  },
+  canContinueSavedGame() {
+    return Boolean(this.saveSlot);
+  },
+  saveSummary() {
+    return this.saveSlot?.summary || null;
+  },
 };
 
 export const gameFlowMethods = {
@@ -97,7 +145,50 @@ export const gameFlowMethods = {
     return { thai, english };
   },
   startGame() {
-    this.screen = SCREEN_IDS.scene;
+    Object.assign(this, {
+      ...createInitialGameState(),
+      saveSlot: this.saveSlot,
+    });
+    this.navigateToScene(SCENE_IDS.prologue);
+  },
+  continueSavedGame() {
+    const saveSlot = readSaveSlot();
+    if (!saveSlot) {
+      this.saveSlot = null;
+      return;
+    }
+
+    const savedState = saveSlot.state;
+    Object.assign(this, {
+      ...createInitialGameState(),
+      sceneId: savedState.sceneId,
+      lineIndex: savedState.lineIndex,
+      party: savedState.party,
+      gold: savedState.gold,
+      inventory: savedState.inventory,
+      shards: savedState.shards,
+      storyFlags: savedState.storyFlags,
+      questLog: savedState.questLog || createInitialQuestLog(),
+      purchasedUpgrades: savedState.purchasedUpgrades,
+      shownChapterSceneIds: savedState.shownChapterSceneIds || [savedState.sceneId],
+      saveSlot,
+    });
+    this.battle = null;
+    this.battleLog = [];
+    this.battlePhase = "player";
+    this.actedPartyIndexes = [];
+    this.selectedPartyIndex = 0;
+    this.battleMenu = "main";
+    this.pendingBattleAction = null;
+    this.shopMsg = "";
+    this.saveMsg = "โหลดเกมแล้ว / SAVE LOADED";
+    this.isQuestLogOpen = false;
+    this.screen = this.getScreenForScene(this.scene);
+  },
+  clearSavedGame() {
+    clearSaveSlot();
+    this.saveSlot = null;
+    this.saveMsg = "";
   },
   continueFromShop() {
     this.navigateToScene(SCENE_IDS.act3);
@@ -142,6 +233,94 @@ export const gameFlowMethods = {
   addShards(shardIds) {
     this.shards = [...new Set([...this.shards, ...shardIds])];
   },
+  addCompletedQuest(quest) {
+    if (!quest) return;
+
+    const completedIds = new Set(this.questLog.completed.map((item) => item.id));
+    if (completedIds.has(quest.id)) return;
+
+    this.questLog = {
+      ...this.questLog,
+      completed: [...this.questLog.completed, quest],
+    };
+  },
+  applyQuestProgress(scene) {
+    const questUpdate = scene.questUpdate || {};
+
+    if (questUpdate.completeCurrent && this.questLog.current) {
+      this.addCompletedQuest(this.questLog.current);
+    }
+
+    if (questUpdate.complete) {
+      questUpdate.complete.forEach((quest) => this.addCompletedQuest(quest));
+    }
+
+    if (scene.objective || questUpdate.current) {
+      this.questLog = {
+        ...this.questLog,
+        current: scene.objective || questUpdate.current,
+      };
+    } else if (questUpdate.clearCurrent) {
+      this.questLog = {
+        ...this.questLog,
+        current: null,
+      };
+    }
+  },
+  getScreenForScene(scene) {
+    return SCREENS_BY_SCENE_TYPE[scene.t] || this.screen;
+  },
+  shouldShowChapterIntro(targetSceneId, targetScene) {
+    return Boolean(
+      targetScene.chapter && !this.shownChapterSceneIds.includes(targetSceneId),
+    );
+  },
+  continueFromChapter() {
+    this.shownChapterSceneIds = [
+      ...new Set([...this.shownChapterSceneIds, this.sceneId]),
+    ];
+    this.screen = this.getScreenForScene(this.scene);
+  },
+  toggleQuestLog() {
+    this.isQuestLogOpen = !this.isQuestLogOpen;
+  },
+  closeQuestLog() {
+    this.isQuestLogOpen = false;
+  },
+  saveGameAtPoint() {
+    if (!this.currentSavePoint) return;
+
+    const saveSlot = {
+      version: SAVE_VERSION,
+      savedAt: new Date().toISOString(),
+      summary: {
+        chapter: this.scene.chapter?.title || this.scene.title || "Aethoria",
+        location: this.scene.location?.name || "Unknown path",
+        objective: this.questLog.current?.title || "",
+      },
+      state: {
+        sceneId: this.sceneId,
+        lineIndex: this.lineIndex,
+        party: this.party,
+        gold: this.gold,
+        inventory: this.inventory,
+        shards: this.shards,
+        storyFlags: this.storyFlags,
+        questLog: this.questLog,
+        purchasedUpgrades: this.purchasedUpgrades,
+        shownChapterSceneIds: [
+          ...new Set([...this.shownChapterSceneIds, this.sceneId]),
+        ],
+      },
+    };
+
+    writeSaveSlot(saveSlot);
+    this.saveSlot = saveSlot;
+    this.saveMsg = "บันทึกแล้ว / GAME SAVED";
+    setTimeout(() => {
+      this.saveMsg = "";
+    }, 2200);
+  },
   hasAllRequiredShards() {
     return hasAllRequiredShards(this.shards);
   },
@@ -159,7 +338,11 @@ export const gameFlowMethods = {
 
     this.sceneId = targetSceneId;
     this.lineIndex = 0;
-    this.screen = SCREENS_BY_SCENE_TYPE[targetScene.t] || this.screen;
+    this.applyQuestProgress(targetScene);
+    this.isQuestLogOpen = false;
+    this.screen = this.shouldShowChapterIntro(targetSceneId, targetScene)
+      ? SCREEN_IDS.chapter
+      : this.getScreenForScene(targetScene);
   },
   advanceSceneLine() {
     if (this.hasMoreSceneLines()) {

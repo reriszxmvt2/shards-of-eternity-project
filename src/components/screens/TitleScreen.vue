@@ -22,9 +22,31 @@
         </span>
       </div>
       <div class="soe__title-party">[W] [M] [A]</div>
-      <ActionButton :color="colors.gold" @click="$emit('start')">
-        &gt;&gt; เริ่มเกม / PRESS START
-      </ActionButton>
+      <div class="soe__title-actions">
+        <ActionButton
+          v-if="canContinue"
+          :color="colors.green"
+          @click="$emit('continue')"
+        >
+          &gt;&gt; เล่นต่อ / CONTINUE
+        </ActionButton>
+        <ActionButton :color="colors.gold" @click="$emit('start')">
+          {{ canContinue ? "เริ่มใหม่ / NEW GAME" : ">> เริ่มเกม / PRESS START" }}
+        </ActionButton>
+        <ActionButton
+          v-if="canContinue"
+          small
+          :color="colors.red"
+          @click="$emit('clear-save')"
+        >
+          ลบเซฟ / CLEAR SAVE
+        </ActionButton>
+      </div>
+      <div v-if="canContinue && saveSummary" class="soe__title-save">
+        {{ saveSummary.location }}
+        <br />
+        <span>{{ saveSummary.objective }}</span>
+      </div>
       <div class="soe__title-meta">
         นักรบ / นักเวท / นักธนู · ต่อสู้ผลัดเทิร์น
         <br />
@@ -45,10 +67,12 @@ export default {
   name: "TitleScreen",
   components: { ActionButton },
   props: {
+    canContinue: { type: Boolean, default: false },
     colors: { type: Object, required: true },
+    saveSummary: { type: Object, default: null },
     visuals: { type: Object, default: () => ({}) },
   },
-  emits: ["start"],
+  emits: ["clear-save", "continue", "start"],
   data() {
     return {
       heroImageFailed: false,

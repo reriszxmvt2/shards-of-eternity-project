@@ -1,9 +1,20 @@
 <template>
   <TitleScreen
     v-if="screen === SCREEN_IDS.title"
+    :can-continue="canContinueSavedGame"
     :colors="COLORS"
+    :save-summary="saveSummary"
     :visuals="GAME_VISUALS"
+    @clear-save="clearSavedGame"
+    @continue="continueSavedGame"
     @start="startGame"
+  />
+
+  <ChapterScreen
+    v-else-if="screen === SCREEN_IDS.chapter"
+    :colors="COLORS"
+    :scene="scene"
+    @continue="continueFromChapter"
   />
 
   <SceneScreen
@@ -82,6 +93,24 @@
     :visible="screen !== SCREEN_IDS.title"
   />
   <button
+    v-if="canShowQuestButton"
+    class="soe__journal-button"
+    type="button"
+    @click="toggleQuestLog"
+  >
+    JOURNAL
+  </button>
+  <QuestLog
+    :quest-log="questLog"
+    :visible="isQuestLogOpen"
+    @close="closeQuestLog"
+  />
+  <SavePointPrompt
+    :message="saveMsg"
+    :save-point="currentSavePoint"
+    @save="saveGameAtPoint"
+  />
+  <button
     v-if="canShowExitButton"
     class="soe__exit-button"
     type="button"
@@ -95,11 +124,14 @@
 <script>
 import "../shards_of_eternity.css";
 import BattleScreen from "./components/screens/BattleScreen.vue";
+import ChapterScreen from "./components/screens/ChapterScreen.vue";
 import ChoiceScreen from "./components/screens/ChoiceScreen.vue";
 import EndingScreen from "./components/screens/EndingScreen.vue";
 import SceneScreen from "./components/screens/SceneScreen.vue";
 import ShopScreen from "./components/screens/ShopScreen.vue";
 import TitleScreen from "./components/screens/TitleScreen.vue";
+import QuestLog from "./components/ui/QuestLog.vue";
+import SavePointPrompt from "./components/ui/SavePointPrompt.vue";
 import ShardTracker from "./components/ui/ShardTracker.vue";
 import { battleComputed, battleMethods } from "./composables/useBattle";
 import {
@@ -114,8 +146,11 @@ export default {
   name: "App",
   components: {
     BattleScreen,
+    ChapterScreen,
     ChoiceScreen,
     EndingScreen,
+    QuestLog,
+    SavePointPrompt,
     SceneScreen,
     ShardTracker,
     ShopScreen,
@@ -136,6 +171,7 @@ export default {
     ...battleComputed,
     canShowExitButton() {
       return [
+        SCREEN_IDS.chapter,
         SCREEN_IDS.scene,
         SCREEN_IDS.choice,
         SCREEN_IDS.shop,
