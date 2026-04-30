@@ -117,7 +117,10 @@ export const battleMethods = {
     };
   },
   selectEnemyTarget(enemy, enemyIndex) {
-    if (!this.isTargetingEnemy || !enemy.alive) return;
+    if (!this.isTargetingEnemy || !enemy.alive) {
+      return;
+    }
+
     this.handlePartyAction(
       this.selectedPartyIndex,
       this.pendingBattleAction.action,
@@ -126,7 +129,10 @@ export const battleMethods = {
     );
   },
   selectAllyTarget(memberIndex) {
-    if (!this.pendingBattleAction) return;
+    if (!this.pendingBattleAction) {
+      return;
+    }
+
     this.handlePartyAction(
       this.selectedPartyIndex,
       this.pendingBattleAction.action,
@@ -135,14 +141,18 @@ export const battleMethods = {
     );
   },
   handlePartyAction(memberIndex, actionType, skillIndex, targetIndex) {
-    if (!this.battle) return;
+    if (!this.battle) {
+      return;
+    }
 
     let nextParty = this.party.map((partyMember) => ({ ...partyMember }));
     let nextEnemies = this.battle.enemies.map((enemy) => ({ ...enemy }));
     const battleMessages = [];
 
     const actingMember = nextParty[memberIndex];
-    if (!actingMember || !actingMember.alive) return;
+    if (!actingMember || !actingMember.alive) {
+      return;
+    }
 
     if (actionType === "attack") {
       const attackSkill = actingMember.skills[0];
@@ -159,7 +169,9 @@ export const battleMethods = {
         battleMessages.push(
           `${actingMember.name} โจมตี ${targetEnemy.name}: ${damage} DMG!`,
         );
-        if (nextHp <= 0) battleMessages.push(`${targetEnemy.name} พ่ายแพ้!`);
+        if (nextHp <= 0) {
+          battleMessages.push(`${targetEnemy.name} พ่ายแพ้!`);
+        }
       }
     } else if (actionType === "skill") {
       const selectedSkill = actingMember.skills[skillIndex];
@@ -197,7 +209,10 @@ export const battleMethods = {
         battleMessages.push(`WAR CRY! ATK ทุกคน +${selectedSkill.bufAmt}!`);
       } else if (selectedSkill.tar === "all") {
         nextEnemies = nextEnemies.map((enemy) => {
-          if (!enemy.alive) return enemy;
+          if (!enemy.alive) {
+            return enemy;
+          }
+
           const damage = this.calculateDamage(
             nextParty[memberIndex].atk,
             nextParty[memberIndex].buf,
@@ -206,7 +221,10 @@ export const battleMethods = {
           );
           const nextHp = Math.max(0, enemy.hp - damage);
           battleMessages.push(`${selectedSkill.name} โจมตี ${enemy.name}: ${damage}!`);
-          if (nextHp <= 0) battleMessages.push(`${enemy.name} พ่ายแพ้!`);
+          if (nextHp <= 0) {
+            battleMessages.push(`${enemy.name} พ่ายแพ้!`);
+          }
+
           return { ...enemy, hp: nextHp, alive: nextHp > 0 };
         });
       } else {
@@ -223,7 +241,10 @@ export const battleMethods = {
           battleMessages.push(
             `${selectedSkill.name} โจมตี ${targetEnemy.name}: ${damage}!`,
           );
-          if (nextHp <= 0) battleMessages.push(`${targetEnemy.name} พ่ายแพ้!`);
+          if (nextHp <= 0) {
+            battleMessages.push(`${targetEnemy.name} พ่ายแพ้!`);
+          }
+
           if (selectedSkill.poison && nextEnemies[targetIndex].alive) {
             nextEnemies[targetIndex] = {
               ...nextEnemies[targetIndex],
@@ -358,7 +379,10 @@ export const battleMethods = {
     const battleMessages = [];
 
     nextEnemies = nextEnemies.map((enemy) => {
-      if (!enemy.alive) return enemy;
+      if (!enemy.alive) {
+        return enemy;
+      }
+
       if (enemy.poison && enemy.poisonT > 0) {
         const poisonDamage = 8;
         const nextHp = Math.max(0, enemy.hp - poisonDamage);
@@ -375,14 +399,19 @@ export const battleMethods = {
     });
 
     nextEnemies.forEach((enemy) => {
-      if (!enemy.alive) return;
+      if (!enemy.alive) {
+        return;
+      }
+
       if (enemy.stunned) {
         battleMessages.push(`${enemy.name} ชะงัก! ข้ามเทิร์น`);
         return;
       }
 
       const alivePartyMembers = nextParty.filter((partyMember) => partyMember.alive);
-      if (!alivePartyMembers.length) return;
+      if (!alivePartyMembers.length) {
+        return;
+      }
 
       const targetMember =
         alivePartyMembers[Math.floor(Math.random() * alivePartyMembers.length)];
@@ -394,7 +423,10 @@ export const battleMethods = {
         const specialAttack = getRandomItem(getBossSpecialAttacks(enemy));
         if (AREA_SPECIAL_ATTACKS.has(specialAttack)) {
           nextParty = nextParty.map((partyMember) => {
-            if (!partyMember.alive) return partyMember;
+            if (!partyMember.alive) {
+              return partyMember;
+            }
+
             const damage = Math.max(
               1,
               Math.floor(enemy.atk * 0.55 * (0.8 + Math.random() * 0.4)) -

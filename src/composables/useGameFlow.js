@@ -40,11 +40,15 @@ const createInitialQuestLog = () => ({
 });
 
 const readSaveSlot = () => {
-  if (typeof window === "undefined") return null;
+  if (typeof window === "undefined") {
+    return null;
+  }
 
   try {
     const rawSave = window.localStorage.getItem(SAVE_KEY);
-    if (!rawSave) return null;
+    if (!rawSave) {
+      return null;
+    }
 
     const saveSlot = JSON.parse(rawSave);
     return saveSlot.version === SAVE_VERSION ? saveSlot : null;
@@ -54,12 +58,18 @@ const readSaveSlot = () => {
 };
 
 const writeSaveSlot = (saveSlot) => {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
+
   window.localStorage.setItem(SAVE_KEY, JSON.stringify(saveSlot));
 };
 
 const clearSaveSlot = () => {
-  if (typeof window === "undefined") return;
+  if (typeof window === "undefined") {
+    return;
+  }
+
   window.localStorage.removeItem(SAVE_KEY);
 };
 
@@ -69,14 +79,26 @@ const hasAllRequiredShards = (shards) =>
   SHARDS_REQUIRED.every((shardId) => hasShard(shards, shardId));
 
 const getFinalEndingSceneId = ({ shards, storyFlags }) => {
-  if (!storyFlags.spared) return ENDING_SCENES.vaelthornDead;
+  if (!storyFlags.spared) {
+    return ENDING_SCENES.vaelthornDead;
+  }
+
   if (!storyFlags.saved || !hasShard(shards, "mercy")) {
     return ENDING_SCENES.missingMercy;
   }
-  if (storyFlags.partyBroken) return ENDING_SCENES.partyBroken;
-  if (!hasShard(shards, "memory")) return ENDING_SCENES.missingMemory;
-  if (!hasShard(shards, "sacrifice")) return ENDING_SCENES.missingSacrifice;
-  if (!hasAllRequiredShards(shards)) return ENDING_SCENES.missingShards;
+  if (storyFlags.partyBroken) {
+    return ENDING_SCENES.partyBroken;
+  }
+  if (!hasShard(shards, "memory")) {
+    return ENDING_SCENES.missingMemory;
+  }
+  if (!hasShard(shards, "sacrifice")) {
+    return ENDING_SCENES.missingSacrifice;
+  }
+  if (!hasAllRequiredShards(shards)) {
+    return ENDING_SCENES.missingShards;
+  }
+
   return ENDING_SCENES.happy;
 };
 
@@ -197,7 +219,9 @@ export const gameFlowMethods = {
     return this.lineIndex < this.sceneLines.length - 1;
   },
   applyReward(reward) {
-    if (!reward) return;
+    if (!reward) {
+      return;
+    }
 
     if (reward.gold) {
       this.gold += reward.gold;
@@ -234,10 +258,14 @@ export const gameFlowMethods = {
     this.shards = [...new Set([...this.shards, ...shardIds])];
   },
   addCompletedQuest(quest) {
-    if (!quest) return;
+    if (!quest) {
+      return;
+    }
 
     const completedIds = new Set(this.questLog.completed.map((item) => item.id));
-    if (completedIds.has(quest.id)) return;
+    if (completedIds.has(quest.id)) {
+      return;
+    }
 
     this.questLog = {
       ...this.questLog,
@@ -288,7 +316,9 @@ export const gameFlowMethods = {
     this.isQuestLogOpen = false;
   },
   saveGameAtPoint() {
-    if (!this.currentSavePoint) return;
+    if (!this.currentSavePoint) {
+      return;
+    }
 
     const saveSlot = {
       version: SAVE_VERSION,
@@ -334,7 +364,9 @@ export const gameFlowMethods = {
   },
   navigateToScene(targetSceneId) {
     const targetScene = SCENES[targetSceneId];
-    if (!targetScene) return;
+    if (!targetScene) {
+      return;
+    }
 
     this.sceneId = targetSceneId;
     this.lineIndex = 0;

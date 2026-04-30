@@ -94,7 +94,10 @@ export default {
       };
     },
     shopButtonColor(item) {
-      if (this.isUpgradeOwned(item)) return this.colors.gray;
+      if (this.isUpgradeOwned(item)) {
+        return this.colors.gray;
+      }
+
       return this.gold >= item.price ? this.colors.green : this.colors.red;
     },
   },
