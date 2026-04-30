@@ -86,7 +86,7 @@ shards-of-eternity-project/
 ├── src/
 │   ├── App.vue                    # App coordinator and screen state
 │   ├── main.js                    # Vue entry point
-│   ├── gameData.js                # Story, party, enemies, shop data
+│   ├── gameData.js                # Compatibility barrel for game-data exports
 │   ├── assets/
 │   │   ├── pixelArt.js            # Bundled pixel-art imports
 │   │   └── pixel-art/             # 8-bit image assets
@@ -94,7 +94,18 @@ shards-of-eternity-project/
 │   │   ├── battle/                # Battle UI pieces
 │   │   ├── screens/               # Main game screens
 │   │   └── ui/                    # Shared UI controls
-│   └── composables/               # Game flow, battle, and shop logic
+│   ├── composables/               # Game flow, battle, and shop logic
+│   └── game-data/
+│       ├── battles.js             # Battle definitions
+│       ├── colors.js              # Shared color constants
+│       ├── enemies.js             # Enemy templates and factory helpers
+│       ├── ids.js                 # Screen, scene, and battle ids
+│       ├── party.js               # Default playable party data
+│       ├── sceneLine.js           # Self-documenting scene line helper
+│       ├── scenes/                # Story scenes split by act and endings
+│       ├── shards.js              # Shard catalog and required shard ids
+│       ├── shop.js                # Shop item catalog
+│       └── visuals.js             # Pixel-art asset mapping
 ├── shards_of_eternity.css         # BEM-based game styles
 ├── index.html
 ├── package.json
@@ -117,7 +128,17 @@ The current codebase is organized around small Vue components and composables:
 - `components/battle` handles battle-specific UI.
 - `components/ui` holds shared controls.
 - `composables` holds game behavior and state transitions.
-- `gameData.js` holds story scenes, battles, Shards, enemies, shop items, and ending data.
+- `gameData.js` re-exports the domain modules in `src/game-data/` for stable imports.
+- `game-data/scenes` keeps story content split by prologue, acts, and endings.
+- Scene dialogue uses `line({ speaker, text, color })` instead of positional arrays.
 - Pixel-art assets are imported through `src/assets/pixelArt.js` so Vite can bundle them correctly.
+
+## Coding Standards
+
+- Use ES6 modules with named imports and exports.
+- Prefer `const`; use `let` only when a variable is reassigned.
+- Keep data modules focused by domain instead of adding new content to `gameData.js`.
+- Use curly braces for all `if`, `else if`, and `else` blocks, including single-line returns.
+- Keep story text in scene modules and shared gameplay behavior in composables.
 
 Made with Vue 3 + JavaScript ES6.
