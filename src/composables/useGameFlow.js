@@ -113,13 +113,13 @@ export const gameFlowComputed = {
     return this.scene.lines || [];
   },
   currentLine() {
-    const line = this.sceneLines[this.lineIndex] || [];
-    const text = this.splitText(line[1] || "");
+    const line = this.sceneLines[this.lineIndex] || {};
+    const text = this.splitText(line.text || "");
     return {
-      speaker: line[0],
+      speaker: line.speaker,
       thai: text.thai,
       english: text.english,
-      color: line[2] || COLORS.white,
+      color: line.color || COLORS.white,
     };
   },
   choiceText() {

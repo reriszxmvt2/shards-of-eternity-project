@@ -1,0 +1,16 @@
+export const COLORS = {
+  bg: "#07071a",
+  panel: "#0e0e28",
+  dark: "#050514",
+  border: "#4477ff",
+  gold: "#ffcc00",
+  red: "#ff3344",
+  green: "#22ee55",
+  blue: "#4477ff",
+  purple: "#bb44ff",
+  white: "#ccddef",
+  gray: "#7788aa",
+  orange: "#ff8833",
+  hp: "#ee2233",
+  mp: "#2266ee",
+};

@@ -15,11 +15,11 @@
       </div>
       <div class="soe__ending-panel" :style="endingPanelStyle">
         <div v-for="(line, index) in scene.lines || []" :key="index" class="soe__ending-line">
-          <div class="soe__ending-text" :style="textColorStyle(line[2] || colors.white)">
-            {{ splitText(line[1] || '').thai }}
+          <div class="soe__ending-text" :style="textColorStyle(line.color || colors.white)">
+            {{ splitText(line.text || '').thai }}
           </div>
-          <div v-if="splitText(line[1] || '').english" class="soe__ending-translation">
-            {{ splitText(line[1] || '').english }}
+          <div v-if="splitText(line.text || '').english" class="soe__ending-translation">
+            {{ splitText(line.text || '').english }}
           </div>
         </div>
       </div>
